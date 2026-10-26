@@ -206,8 +206,8 @@
 
 <div class="ov" id="ov-shelf">
   <p class="k">V · The Shelf</p>
-  <h2>Five things we make <em>slowly, on purpose.</em></h2>
-  <p>Original Spears $18 · Kraken $20 · Relish $11 · Estate Honey $12 · Pastured Eggs $7</p>
+  <h2>Four things we make <em>slowly, on purpose.</em></h2>
+  <p>Original Spears $18 · Kraken $20 · Relish (sold out) · Estate Honey (sold out)</p>
   <div class="ctas">
     <a class="buy" href="../#collection">Visit the estate</a>
     <a class="ghost" href="mailto:hello@tipsy.farm">Write us</a>
@@ -278,7 +278,7 @@
   <section>
     <h2>V · The Shelf</h2>
     <p>Original Pirate Shack Spears $18 · Kraken Super Spicy Spears $20 · Pirate Shack
-       Relish $11 · Estate Honey $12 · Pastured Eggs $7.
+       Relish (sold out) · Estate Honey (sold out).
        <a href="../#collection">Visit the estate</a> or <a href="mailto:hello@tipsy.farm">write us</a>.</p>
   </section>
   <section>
@@ -512,9 +512,9 @@ if (reduce || !canWebGL) {
     const plank = new THREE.Mesh(new THREE.BoxGeometry(34, .7, 6),
       new THREE.MeshStandardMaterial({ color: 0x4a2f12, roughness: .8 }));
     plank.position.set(0, -2.4, -48); shelf.add(plank);
-    const labels = ['ORIGINAL', 'KRAKEN', 'RELISH', 'HONEY', 'EGGS'];
-    const bodies = [0x31431f, 0x3d1e14, 0x6b6b1e, 0xe9a821, 0xc9c9b4];
-    const prices = ['$18', '$20', '$11', '$12', '$7'];
+    const labels = ['ORIGINAL', 'KRAKEN', 'RELISH', 'HONEY'];
+    const bodies = [0x31431f, 0x3d1e14, 0x6b6b1e, 0xe9a821];
+    const prices = ['$18', '$20', 'SOLD OUT', 'SOLD OUT'];
     labels.forEach((txt, i) => {
       const g = new THREE.Group();
       const body = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 3, 18),
@@ -528,13 +528,13 @@ if (reduce || !canWebGL) {
       cx.fillStyle = '#FBF3DE'; cx.fillRect(0, 0, 256, 128);
       cx.fillStyle = '#171006'; cx.font = '700 34px Georgia'; cx.textAlign = 'center';
       cx.fillText(txt, 128, 58);
-      cx.fillStyle = '#B8730E'; cx.font = 'italic 28px Georgia'; cx.fillText(prices[i], 128, 98);
+      cx.fillStyle = prices[i] === 'SOLD OUT' ? '#C0392B' : '#B8730E'; cx.font = 'italic 28px Georgia'; cx.fillText(prices[i], 128, 98);
       const lt = new THREE.CanvasTexture(cv); lt.colorSpace = THREE.SRGBColorSpace;
       const label = new THREE.Mesh(new THREE.PlaneGeometry(1.9, .95),
         new THREE.MeshBasicMaterial({ map: lt }));
       label.position.set(0, .1, 1.16);
       g.add(body, lid, label);
-      g.position.set((i - 2) * (mobile ? 3.6 : 5.4), .3, -48);
+      g.position.set((i - 1.5) * (mobile ? 3.6 : 5.4), .3, -48);
       shelf.add(g);
     });
     const warm = new THREE.PointLight(0xFFD98A, 150, 80, 1.6); warm.position.set(0, 8, -38); shelf.add(warm);
