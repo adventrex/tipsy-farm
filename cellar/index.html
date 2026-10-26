@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Cellar · Tipsy Bee Farms — Honeys, Meads &amp; Pickles</title>
+<meta name="description" content="The larder list of Tipsy Bee Farms, Rogue Valley, Oregon: honey varietals and pickles set in type and priced in dollars — and the family’s mead reserve, which is not.">
+<meta name="theme-color" content="#FAE8A6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 28 9v14L16 30 4 23V9Z' fill='%23F5B426'/%3E%3Cpath d='M16 6 24.5 11v10L16 26 7.5 21V11Z' fill='%231A1206'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   THE CELLAR — a letterpress broadsheet for Tipsy Bee Farms
+   Baseline unit: 32px desktop / 28px mobile. Everything sits on it.
+   ============================================================ */
+:root{
+  --bl: 32px;                 /* the baseline unit — the whole sheet obeys it */
+  --rule-shift: 24px;         /* where the printed ruling meets the type baseline */
+  --paper:  #FAE8A6;
+  --paper-hi:#FDF3CB;
+  --paper-lo:#EFDA8F;
+  --ink:    #1A1206;
+  --ink-soft:#4A3A20;
+  --ink-faint: rgba(26,18,6,.16);
+  --honey:  #F5B426;
+  --amber:  #B8730E;
+  --desk:   #14100A;
+  --marg: 264px;              /* the footnote margin column */
+  --gutter: 56px;
+  --ease-press: cubic-bezier(.22,.9,.24,1);      /* the platen coming down */
+  --ease-lift:  cubic-bezier(.34,1.25,.4,1);     /* the platen coming up   */
+  --dur: .38s;
+}
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0 }
+html{ background: var(--desk); scroll-behavior:smooth }
+html, body{ overflow-x: clip }
+body{
+  font-family:'EB Garamond', Georgia, serif;
+  font-size:20px; line-height: var(--bl);
+  color: var(--ink);
+  font-variant-numeric: oldstyle-nums;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  padding: calc(var(--bl)*1.5) 24px calc(var(--bl)*2);
+}
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto }
+  *, *::before, *::after{ transition-duration:.01ms !important; animation-duration:.01ms !important }
+}
+::selection{ background: var(--honey); color: var(--ink) }
+
+/* ---------- the sheet on the desk ---------- */
+.press{ position:relative; max-width:1120px; margin:0 auto }
+.sheet{
+  position:relative;
+  background-color: var(--paper);
+  background-image:
+    /* press-bed vignette: uneven inking toward the edges */
+    radial-gradient(130% 90% at 50% 6%, rgba(255,251,232,.5), transparent 55%),
+    radial-gradient(140% 120% at 50% 108%, rgba(148,110,28,.14), transparent 55%),
+    linear-gradient(90deg, rgba(148,110,28,.10), transparent 6%, transparent 94%, rgba(148,110,28,.10)),
+    /* the baseline ruling — faint ledger lines every var(--bl) */
+    repeating-linear-gradient(to bottom,
+      var(--ruling, rgba(26,18,6,.05)) 0 1px, transparent 1px var(--bl));
+  background-position: 0 0, 0 0, 0 0, 0 var(--rule-shift);
+  box-shadow:
+    0 2px 5px rgba(0,0,0,.4),
+    0 28px 70px -32px rgba(0,0,0,.65);
+  padding: calc(var(--bl)*2) 72px calc(var(--bl)*2);
+}
+body.grid-on .sheet{ --ruling: rgba(26,18,6,.20) }
+/* paper grain — SVG turbulence, ink-toned, very quiet */
+.sheet::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.08 0 0 0 0 0.02 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23g)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+/* crop marks on the desk, outside the trim */
+.crop{ position:absolute; width:20px; height:20px; pointer-events:none }
+.crop::before,.crop::after{ content:''; position:absolute; background:rgba(250,232,166,.35) }
+.crop::before{ width:20px; height:1px }
+.crop::after{ width:1px; height:20px }
+.crop.tl{ top:-28px; left:-28px }        .crop.tl::before{ bottom:0 } .crop.tl::after{ right:0 }
+.crop.tr{ top:-28px; right:-28px }       .crop.tr::before{ bottom:0 } .crop.tr::after{ left:0 }
+.crop.bl{ bottom:-28px; left:-28px }     .crop.bl::before{ top:0 }    .crop.bl::after{ right:0 }
+.crop.br{ bottom:-28px; right:-28px }    .crop.br::before{ top:0 }    .crop.br::after{ left:0 }
+
+/* ---------- shared type ---------- */
+.sc{
+  font-family:'EB Garamond', Georgia, serif;
+  font-variant-caps: all-small-caps;
+  font-feature-settings: 'smcp' 1, 'c2sc' 1;
+  letter-spacing:.3em;
+}
+.mono{
+  font-family:'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: lining-nums;
+}
+a{ color:inherit }
+a:focus-visible, button:focus-visible{
+  outline: 2px solid var(--ink); outline-offset: 3px; border-radius:1px;
+}
+
+/* ---------- masthead ---------- */
+.masthead{ position:relative; text-align:center }
+.ear{
+  position:absolute; top:0; width:22ch;
+  font-family:'IBM Plex Mono', monospace; font-style:italic;
+  font-size:11.5px; line-height:16px; letter-spacing:.02em;
+  color: var(--ink-soft);
+}
+.ear.left{ left:0; text-align:left }
+.ear.right{ right:0; text-align:right }
+.masthead .kicker{
+  font-size:17px; line-height: var(--bl); color: var(--ink);
+  margin-bottom: 0;
+}
+.nameplate{
+  font-family:'Fraunces', serif;
+  font-variation-settings:'opsz' 144, 'wght' 460, 'SOFT' 40;
+  font-weight:460;
+  font-size:120px; line-height: calc(var(--bl)*4);
+  letter-spacing:-.015em;
+  text-shadow: 0 1px 0 rgba(255,251,232,.5); /* the impression */
+}
+.nameplate em{
+  font-style:italic;
+  font-variation-settings:'opsz' 144, 'wght' 380, 'SOFT' 40;
+  margin-right:.06em;
+}
+.nameplate .full-stop{ color: var(--amber) }
+.masthead .sub{
+  font-style:italic; font-size:23px; line-height: var(--bl);
+  color: var(--ink-soft);
+  max-width:56ch; margin:0 auto;
+}
+.edition{
+  margin-top: var(--bl);
+  margin-bottom: -6px; /* the 6px of border rules, given back so the grid re-syncs below */
+  border-top: 5px solid var(--honey);
+  border-bottom: 1px solid var(--ink);
+  position:relative;
+}
+.edition::before{
+  content:''; position:absolute; top:2px; left:0; right:0;
+  border-top:1px solid var(--ink);
+}
+.edition p{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px; line-height: var(--bl);
+  letter-spacing:.22em; text-transform:uppercase;
+  display:flex; justify-content:space-between; gap:1ch; flex-wrap:wrap;
+}
+.edition span{ white-space:nowrap }
+
+/* ---------- preface ---------- */
+.preface{
+  display:grid;
+  grid-template-columns: 1fr var(--marg);
+  column-gap: var(--gutter);
+  padding-top: calc(var(--bl)*2);
+}
+.preface .inner{ grid-column:1; max-width:58ch }
+.preface .margin{ grid-column:2; grid-row:1; padding-top:8px }
+.preface p{ font-size:22px; line-height: var(--bl) }
+.preface .inner p + p{ margin-top: var(--bl) }
+.hangq{ text-indent:-.62ch }
+@supports (hanging-punctuation: first){
+  .hangq{ text-indent:0; hanging-punctuation: first }
+}
+.preface .drop::first-letter{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-variation-settings:'opsz' 144, 'wght' 600, 'SOFT' 60;
+  float:left;
+  font-size: calc(var(--bl)*3 - 8px);
+  line-height: calc(var(--bl)*3 - 20px);
+  padding: 6px 12px 0 0;
+  color: var(--ink);
+}
+.signoff{
+  grid-column:1;
+  font-style:italic; text-align:right; color:var(--ink-soft);
+  max-width:58ch; width:100%; margin-top: var(--bl);
+  font-size:22px; line-height:var(--bl);
+}
+.signoff .fleuron{ color: var(--amber); font-style:normal }
+
+/* ---------- departments ---------- */
+.dept{ padding-top: calc(var(--bl)*3) }
+.dept-head{
+  display:grid;
+  grid-template-columns: 1fr var(--marg);
+  column-gap: var(--gutter);
+  align-items:end;
+  border-bottom:1px solid var(--ink);
+  padding-bottom: calc(var(--bl) - 1px);
+}
+.dept-title{ display:flex; align-items:baseline; gap:24px }
+.dept-no{
+  font-family:'Fraunces', serif;
+  font-variation-settings:'opsz' 144, 'wght' 500, 'SOFT' 30;
+  font-size:88px; line-height: calc(var(--bl)*2);
+  color: var(--honey);
+  text-shadow: 0 1px 0 rgba(120,84,10,.25);
+}
+.dept-head h2{
+  font-family:'Fraunces', serif;
+  font-variation-settings:'opsz' 144, 'wght' 560, 'SOFT' 40;
+  font-weight:560;
+  font-size:46px; line-height: calc(var(--bl)*2);
+  letter-spacing:-.01em;
+  text-shadow: 0 1px 0 rgba(255,251,232,.45);
+}
+.dept-kicker{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11.5px; line-height:calc(var(--bl)*1);
+  letter-spacing:.24em; text-transform:uppercase;
+  color: var(--ink-soft);
+  text-align:right;
+}
+
+/* ---------- entries ---------- */
+.entry{
+  display:grid;
+  grid-template-columns: 1fr var(--marg);
+  column-gap: var(--gutter);
+  padding-top: calc(var(--bl)*2); /* full grid units only — the ruling must hold */
+}
+.entry .body{ position:relative }
+.entry .ordinal{
+  position:absolute; left:-46px; top:0; width:36px;
+  text-align:right;
+  font-size:20px; line-height: var(--bl);
+  color: var(--ink-soft);
+  font-variant-numeric: oldstyle-nums;
+}
+.entry h3{
+  display:flex; align-items:baseline; gap:.55ch;
+  font-weight:inherit;
+}
+.entry .name{
+  font-family:'Fraunces', serif;
+  font-variation-settings:'opsz' 60, 'wght' 500, 'SOFT' 24;
+  font-weight:500;
+  font-size:29px; line-height: var(--bl);
+  letter-spacing:-.005em;
+  transition: text-shadow var(--dur) var(--ease-press), transform var(--dur) var(--ease-press);
+}
+.entry .leader{
+  flex:1 1 3ch; min-width:3ch; height:.75em; align-self:baseline;
+  background-image: radial-gradient(circle at 1.3px 1.3px, rgba(26,18,6,.55) 1.3px, transparent 1.9px);
+  background-size: 9px 3px; background-repeat: repeat-x;
+  background-position: 0 100%;
+}
+.entry .price{
+  font-family:'IBM Plex Mono', monospace; font-weight:500;
+  font-size:16px; line-height: var(--bl);
+  transition: transform var(--dur) var(--ease-press), text-shadow var(--dur) var(--ease-press);
+}
+.entry .desc{ margin-top: var(--bl); max-width:60ch }
+.entry .batch{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11.5px; line-height: var(--bl);
+  letter-spacing:.18em; text-transform:uppercase;
+  color: var(--ink-soft);
+}
+/* the letterpress deboss on hover: ink squashes, type presses in */
+.entry:hover .name, .entry:focus-within .name{
+  text-shadow:
+    0 1px 0 rgba(255,251,232,.55),
+    0 0 .5px currentColor, 0 0 1px rgba(26,18,6,.4);
+  transform: translateY(.5px);
+  transition-timing-function: var(--ease-lift);
+}
+.entry:hover .price, .entry:focus-within .price{
+  text-shadow: 0 1px 0 rgba(255,251,232,.55), 0 0 .5px currentColor;
+  transform: translateY(.5px);
+}
+/* footnote reference marks */
+.fnref{
+  text-decoration:none; font-weight:700;
+  font-size:.72em; vertical-align:.32em; line-height:0;
+  padding:.1em .15em;
+  transition: color var(--dur) var(--ease-press), background-color var(--dur) var(--ease-press);
+}
+.fnref:hover{ background-color: rgba(245,180,38,.35) }
+
+/* ---------- margin notes ---------- */
+.margin{
+  position:relative; padding-left:28px;
+  align-self:start;
+  font-style:italic; font-size:17px; line-height:24px;
+  color: var(--ink-soft);
+  padding-top: 6px; /* first line optically level with the entry name */
+  transition: color var(--dur) var(--ease-press);
+}
+.margin::before{
+  content:''; position:absolute; left:0; top:8px; bottom:2px;
+  border-left:1px solid var(--ink-faint);
+  transition: border-color var(--dur) var(--ease-press);
+}
+.margin .mark{ font-style:normal; font-weight:700; color:var(--ink); padding-right:.35ch }
+.entry:hover .margin, .entry:focus-within .margin,
+.entry:has(.fnref:hover) .margin{ color: var(--ink) }
+.entry:hover .margin::before, .entry:has(.fnref:hover) .margin::before{ border-color: var(--amber) }
+.margin:target{ color: var(--ink) }
+.margin:target::before{ border-color: var(--amber) }
+
+/* ---------- the tipped-in specimen ---------- */
+.specimen{
+  margin-top: var(--bl);
+  width: 208px;
+  position:relative;
+  transform: rotate(-2.1deg);
+  transition: transform var(--dur) var(--ease-lift), filter var(--dur) var(--ease-press);
+}
+.specimen:hover{ transform: rotate(-.7deg) translateY(-1px) }
+.specimen .label{
+  position:relative;
+  background: #FDF4CE;
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 0 0 0 3px #FDF4CE,
+    inset 0 0 0 4px var(--ink),
+    2px 4px 10px rgba(26,18,6,.28);
+  padding: 18px 12px 16px;
+  text-align:center;
+  font-style: normal;
+  color: var(--ink);
+}
+.specimen .l-farm{ font-size:12px; line-height:16px; letter-spacing:.26em }
+.specimen .l-name{
+  font-family:'Fraunces', serif;
+  font-variation-settings:'opsz' 40, 'wght' 620, 'SOFT' 55;
+  font-weight:620;
+  font-size:25px; line-height:27px;
+  margin: 8px 0 6px;
+  text-shadow: 0 1px 0 rgba(255,251,232,.5);
+}
+.specimen .l-hex{ display:block; margin: 2px auto; width:54px; height:12px; color:var(--amber) }
+.specimen .l-meta{ font-size:11px; line-height:16px; letter-spacing:.2em; margin-top:6px }
+.specimen .l-meta + .l-meta{ margin-top:0 }
+.specimen .l-town{ font-style:italic; font-size:13px; line-height:16px; margin-top:4px; color:var(--ink-soft) }
+/* matte tape, two corners */
+.specimen::before, .specimen::after{
+  content:''; position:absolute; width:58px; height:20px;
+  background: rgba(255,253,244,.42);
+  box-shadow: 0 1px 2px rgba(26,18,6,.14);
+  z-index:1;
+}
+.specimen::before{ top:-8px; left:-18px; transform: rotate(-42deg) }
+.specimen::after{ top:-8px; right:-18px; transform: rotate(42deg) }
+.specimen figcaption{
+  font-family:'IBM Plex Mono', monospace;
+  font-style:normal; font-size:10px; line-height:16px;
+  letter-spacing:.2em; text-transform:uppercase;
+  color: var(--ink-soft);
+  text-align:center; margin-top:10px;
+}
+
+/* the SPOKEN FOR stamp — rubber-stamped beside the batch line */
+.stamp{
+  position:absolute; right:0; bottom:-4px;
+  transform: rotate(-4.5deg);
+  border: 3px double var(--amber);
+  padding: 3px 10px;
+  font-family:'IBM Plex Mono', monospace; font-weight:500;
+  font-size:12px; line-height:18px; letter-spacing:.2em; text-transform:uppercase;
+  color: var(--ink-soft);
+  text-align:center;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 .62'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23s)'/%3E%3C/svg%3E");
+  mask-size:120px 120px;
+}
+
+/* ---------- ornaments ---------- */
+.orn{ display:block; margin: calc(var(--bl)*1.5) auto 0; width:120px; height:calc(var(--bl)*1); color:var(--amber) }
+.notice{
+  margin-top: calc(var(--bl)*2);
+  text-align:center;
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+  padding: calc(var(--bl)*.5 - 1px) 24px;
+}
+.notice p{ font-size:19px; line-height:var(--bl); font-style:italic; color:var(--ink-soft); }
+.notice .sc{ font-style:normal; letter-spacing:.24em; color:var(--ink) }
+
+/* ---------- colophon / nav ---------- */
+.colophon{
+  margin-top: calc(var(--bl)*2);
+  text-align:center;
+}
+.colophon .pressmark{
+  display:block; margin: 0 auto;
+  height: calc(var(--bl)*3); width:auto;
+  mix-blend-mode: multiply;
+}
+.colophon .setnote{
+  font-size:17px; line-height:24px; font-style:italic; color:var(--ink-soft);
+  max-width:52ch; margin: calc(var(--bl)*.5) auto 0;
+}
+.sheets-nav{ margin-top: var(--bl) }
+.sheets-nav p{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11.5px; line-height:var(--bl); letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.sheets-nav ul{
+  list-style:none;
+  display:flex; flex-wrap:wrap; justify-content:center;
+  column-gap:2.5ch; row-gap:0;
+}
+.sheets-nav li{
+  font-size:19px; line-height:var(--bl);
+  display:flex; align-items:baseline; gap:1ch;
+}
+.sheets-nav li + li::before{ content:'·'; color:var(--amber); font-weight:700 }
+.sheets-nav a{
+  text-decoration:none;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 calc(100% - 3px) / 100% 1px;
+  transition: background-size var(--dur) var(--ease-press), transform var(--dur) var(--ease-lift), text-shadow var(--dur) var(--ease-press);
+}
+.sheets-nav a:hover{
+  background-size:100% 3px;
+  transform: translateY(.5px);
+  text-shadow: 0 1px 0 rgba(255,251,232,.55), 0 0 .5px currentColor;
+}
+.sheets-nav .here{
+  font-weight:700;
+}
+.sheets-nav .here .sc{ letter-spacing:.06em }
+.fineprint{
+  margin-top: var(--bl);
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px; line-height:16px; letter-spacing:.06em;
+  color: var(--ink-soft);
+}
+
+/* ---------- the pressman's grid toggle ---------- */
+.grid-toggle{
+  position:fixed; right:14px; bottom:12px; z-index:5;
+  font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase;
+  color: rgba(250,232,166,.9);
+  background: var(--desk);
+  border:1px solid rgba(250,232,166,.45);
+  padding:6px 10px;
+  cursor:pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  transition: color var(--dur) var(--ease-press), border-color var(--dur) var(--ease-press), background-color var(--dur) var(--ease-press);
+}
+.grid-toggle:hover{ color:var(--desk); background:rgba(250,232,166,.92); border-color:rgba(250,232,166,.92) }
+.grid-toggle[aria-pressed="true"]{ color:var(--desk); background:var(--honey); border-color:var(--honey) }
+
+/* skip link */
+.skip{
+  position:absolute; left:-9999px; top:0;
+  font-family:'IBM Plex Mono', monospace; font-size:13px;
+  background:var(--ink); color:var(--paper); padding:8px 14px; z-index:10;
+}
+.skip:focus{ left:12px; top:12px }
+
+/* ============================================================
+   MOBILE — 390×844. The grid tightens to 28px and holds.
+   ============================================================ */
+@media (max-width: 760px){
+  :root{ --bl: 28px; --rule-shift: 21px }
+  body{ font-size:18px; padding: calc(var(--bl)*.75) 10px calc(var(--bl)*1.5) }
+  .sheet{ padding: calc(var(--bl)*1.5) 22px calc(var(--bl)*1.5) }
+  .crop{ display:none }
+  .ear, .ear.left{ position:static; width:auto; text-align:center; display:block; margin-bottom: calc(var(--bl)*.5) }
+  .ear.right{ display:none }
+  .ear br{ display:none }
+  .masthead .kicker{ font-size:15px; letter-spacing:.24em }
+  .masthead .kicker .k-dot{ display:none }
+  .masthead .kicker span{ display:block }
+  .nameplate{ font-size:58px; line-height: calc(var(--bl)*3) }
+  .masthead .sub{ font-size:19px }
+  .edition p{ justify-content:center; font-size:10.5px; letter-spacing:.15em }
+  .preface{ grid-template-columns: 1fr }
+  .preface .margin{ grid-column:1; grid-row:auto; margin-top: var(--bl); padding-top:0 }
+  .preface p{ font-size:19px }
+  .signoff{ max-width:none; font-size:19px }
+  .preface .drop::first-letter{
+    font-size: calc(var(--bl)*3 - 12px);
+    line-height: calc(var(--bl)*3 - 22px);
+    padding: 5px 10px 0 0;
+  }
+  .dept-head, .entry{ grid-template-columns: 1fr; column-gap:0 }
+  .dept-kicker{ text-align:left; grid-row:1 }
+  .dept-no{ font-size:60px; line-height: calc(var(--bl)*2) }
+  .dept-head h2{ font-size:34px; line-height: calc(var(--bl)*2) }
+  .entry .ordinal{ position:static; width:auto; display:block; text-align:left;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.18em;
+    color:var(--ink-soft); line-height:var(--bl) }
+  .entry .name{ font-size:24px }
+  .entry .desc{ max-width:none }
+  .entry .batch{ letter-spacing:.14em }
+  .margin{ margin-top: var(--bl); padding-top:0 }
+  .margin::before{ top:2px }
+  .specimen{ margin: var(--bl) auto 0 }
+  .stamp{ position:static; display:inline-block; margin-top:8px; transform:rotate(-3deg) }
+  .sheets-nav ul{ flex-direction:column }
+  .sheets-nav li + li::before{ content:none }
+  .sheets-nav li{ justify-content:center }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#provisions">Skip to the provisions</a>
+
+<div class="press">
+  <span class="crop tl" aria-hidden="true"></span><span class="crop tr" aria-hidden="true"></span>
+  <span class="crop bl" aria-hidden="true"></span><span class="crop br" aria-hidden="true"></span>
+
+  <div class="sheet">
+
+    <header class="masthead">
+      <p class="ear left">Weather for pressing: <br>dry, with bees.</p>
+      <p class="ear right">Motto: &ldquo;slightly airborne<br>since 1994.&rdquo;</p>
+      <p class="kicker sc"><span>Tipsy Bee Farms</span><span class="k-dot"> &middot; </span><span>Rogue Valley, Oregon</span></p>
+      <h1 class="nameplate"><em>The</em> Cellar<span class="full-stop">.</span></h1>
+      <p class="sub">Being an honest account of the farm&rsquo;s provisions &mdash; honeys, meads &amp; pickles &mdash; set in type and priced in dollars, the meads excepted.</p>
+      <div class="edition">
+        <p><span>No. 4 &mdash; pressed summer 2026</span> <span>Medford, Ore.</span> <span>Price: one good story, told properly</span></p>
+      </div>
+    </header>
+
+    <main id="provisions">
+
+      <section class="preface" aria-label="A note from the family">
+        <div class="inner">
+          <p class="drop">Everything on this sheet was grown, gathered, or brined within a short walk of the kitchen door. Great&#8209;grandfather raised Comice pears by the mountain&#8209;load; Curtis built a human&#8209;powered helicopter and pedaled it off the floor of a Boeing hangar; we put up pickles. The family regards this as a lateral move.<a class="fnref" id="fnref-1" href="#fn-1" aria-label="Footnote, asterisk">*</a></p>
+          <p class="hangq">&ldquo;Quantities are what they are. When a jar is gone, it is gone until the valley makes more of whatever went into it &mdash; and the valley will not be hurried, and neither, frankly, will we.&rdquo;</p>
+        </div>
+        <aside class="margin" id="fn-1"><span class="mark">*</span>Flight, fermentation, family: the official order of operations. The bees enforce it.</aside>
+        <p class="signoff">&mdash; the family, over the crocks&ensp;<span class="fleuron" aria-hidden="true">&#10087;</span></p>
+      </section>
+
+      <section class="dept" aria-labelledby="dept-honeys">
+        <header class="dept-head">
+          <div class="dept-title">
+            <span class="dept-no" aria-hidden="true">I</span>
+            <h2 id="dept-honeys">Honeys</h2>
+          </div>
+          <p class="dept-kicker">Dept. of Bees &mdash; drawn from the comb, poured unhurried</p>
+        </header>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">1</span>
+            <h3><span class="name">Meadowfoam Honey</span><span class="leader" aria-hidden="true"></span><span class="price">$14</span></h3>
+            <p class="desc"><em>Limnanthes alba</em> &mdash; a seed crop the neighbors rotate through the valley floor, and the bees commute to it like a job they love. Tastes, truly, of toasted marshmallow; we did not believe it either, and now we keep a jar by the coffee. Raw, unfiltered, inclined to candy slowly.</p>
+            <p class="batch">Lot 12 &middot; 12 oz hex jar &middot; pulled late June &middot; forty hives consulted</p>
+          </div>
+          <aside class="margin">
+            <p><span class="mark" aria-hidden="true">&#8258;</span>The seed farmers grow meadowfoam for oil. We consider the honey the point and the oil a byproduct, and we have said so at meetings.</p>
+            <figure class="specimen">
+              <div class="label">
+                <p class="l-farm sc">Tipsy Bee Farms</p>
+                <p class="l-name">Meadowfoam<br>Honey</p>
+                <svg class="l-hex" viewBox="0 0 54 12" aria-hidden="true" focusable="false">
+                  <path d="M2 6h14M38 6h14" stroke="currentColor" stroke-width="1"/>
+                  <path d="M27 1.2 31.2 3.6v4.8L27 10.8 22.8 8.4V3.6Z" fill="currentColor"/>
+                </svg>
+                <p class="l-meta sc">No. 12 &middot; Raw &amp; Unfiltered</p>
+                <p class="l-meta sc">Twelve Fluid Ounces</p>
+                <p class="l-town">Medford, Oregon</p>
+              </div>
+              <figcaption>specimen &mdash; jar label, actual size</figcaption>
+            </figure>
+          </aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">2</span>
+            <h3><span class="name">Wildflower Honey</span><span class="leader" aria-hidden="true"></span><span class="price">$12</span></h3>
+            <p class="desc">Whatever bloomed between the ditch and the fence line, in the order the bees preferred it. Darker by August, lighter by June. The bees do not take requests, and after some reflection, neither do we.<a class="fnref" id="fnref-2" href="#fn-2" aria-label="Footnote, dagger">&dagger;</a></p>
+            <p class="batch">No. 7 &middot; 12 oz hex jar &middot; a different honey every year, on purpose</p>
+          </div>
+          <aside class="margin" id="fn-2"><span class="mark">&dagger;</span>No. 7 took first at the Jackson County Fair. We don&rsquo;t talk about batch No. 6.</aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">3</span>
+            <h3><span class="name">Orchard&#8209;Blossom Honey</span><span class="leader" aria-hidden="true"></span><span class="price">$18</span></h3>
+            <p class="desc">One narrow week of pear bloom in April, from the rows great&#8209;grandfather planted in the twenties. Pale, quiet, faintly pear&#8209;skin at the finish. The old orchard is down to its last tree, so this is less a product than a fond annual argument with time.<a class="fnref" id="fnref-3" href="#fn-3" aria-label="Footnote, double dagger">&Dagger;</a></p>
+            <p class="batch">Lot 4 &middot; 8 oz jar &middot; short supply &middot; bottled small so more people get some</p>
+          </div>
+          <aside class="margin" id="fn-3"><span class="mark">&Dagger;</span>The last pear tree still sets fruit. We read it the fair results every autumn. It seems pleased.</aside>
+        </article>
+      </section>
+
+      <section class="dept" aria-labelledby="dept-meads">
+        <header class="dept-head">
+          <div class="dept-title">
+            <span class="dept-no" aria-hidden="true">II</span>
+            <h2 id="dept-meads">Meads</h2>
+          </div>
+          <p class="dept-kicker">Dept. of Fermentation &mdash; the family reserve &middot; brewed for our own table, not for sale</p>
+        </header>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">4</span>
+            <h3><span class="name">Traditional Mead, Dry</span><span class="leader" aria-hidden="true"></span><span class="price">N.F.S.</span></h3>
+            <p class="desc">Wildflower honey and well water, fermented slow and racked patient. Dry as a family joke, gold as four o&rsquo;clock in August. Serve cool, not cold; it has feelings.</p>
+            <p class="batch">Batch T&#8209;7 &middot; 750 ml &middot; two winters in glass &middot; 12.5% abv</p>
+          </div>
+          <aside class="margin"><span class="mark" aria-hidden="true">&#8258;</span>The well is the same one the orchard drank from. We see no reason to complicate a working arrangement.</aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">5</span>
+            <h3><span class="name">Cyser &mdash; Apple &amp; Pear</span><span class="leader" aria-hidden="true"></span><span class="price">N.F.S.</span></h3>
+            <p class="desc">Mead made on orchard fruit is called cyser, and we will keep saying so, politely, to anyone who asks at the market table.<a class="fnref" id="fnref-4" href="#fn-4" aria-label="Footnote, section mark">&sect;</a> Comice pear and cider apple under the honey; finishes crisp, with a little orchard tannin to keep everyone honest.</p>
+            <p class="batch">Batch C&#8209;3 &middot; 750 ml &middot; pressed October &middot; oaked lightly, out of respect</p>
+          </div>
+          <aside class="margin" id="fn-4"><span class="mark">&sect;</span>&ldquo;Apple&#8209;honey wine&rdquo; is a description. Cyser is a word. Use the word.</aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">6</span>
+            <h3><span class="name">Hangar Reserve Cyser</span><span class="leader" aria-hidden="true"></span><span class="price">N.F.S.</span></h3>
+            <p class="desc">Laid down each year on the 27th of August, the anniversary of the day the <em>Tipsy Bee</em> &mdash; Curtis&rsquo;s human&#8209;powered helicopter &mdash; got its skids off the concrete of a Boeing hangar. Aged roughly ten thousand times longer than the flight itself.<a class="fnref" id="fnref-5" href="#fn-5" aria-label="Footnote, double vertical bar">&#8214;</a> Bottled in 500&nbsp;ml, because reverence.</p>
+            <p class="batch">Batch HR&#8209;94 &middot; 500 ml &middot; laid down in August</p>
+            <span class="stamp" role="img" aria-label="Stamped: spoken for through winter">Spoken for<br>through winter</span>
+          </div>
+          <aside class="margin" id="fn-5"><span class="mark">&#8214;</span>The flight is measured in seconds, the landing in stories. Both records stand.</aside>
+        </article>
+      </section>
+
+      <section class="dept" aria-labelledby="dept-pickles">
+        <header class="dept-head">
+          <div class="dept-title">
+            <span class="dept-no" aria-hidden="true">III</span>
+            <h2 id="dept-pickles">Pickles</h2>
+          </div>
+          <p class="dept-kicker">Dept. of Brine &mdash; the pickle pivot, continued</p>
+        </header>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">7</span>
+            <h3><span class="name">Garlic&#8209;Dill Crocks</span><span class="leader" aria-hidden="true"></span><span class="price">$11</span></h3>
+            <p class="desc">Cucumbers off the bottom field, brined in the stoneware by the cellar stairs, with dill gone properly to seed and enough garlic to be honest about it. Fermented, never vinegared. The crunch is load&#8209;bearing.</p>
+            <p class="batch">Crock 2 &middot; quart &middot; salt at 3.5% &middot; cellar&#8209;cool since July</p>
+          </div>
+          <aside class="margin"><span class="mark" aria-hidden="true">&#8258;</span>The crocks are older than the pickles, the recipe is older than the crocks, and the argument about the garlic is older than all three.</aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">8</span>
+            <h3><span class="name">Bread &amp; Butters</span><span class="leader" aria-hidden="true"></span><span class="price">$9</span></h3>
+            <p class="desc">Sweet, sharp, sliced thin. Canon requires them on a ham sandwich; science has not located a better use, though we fund ongoing research at lunch.</p>
+            <p class="batch">Packed August &middot; pint &middot; grandmother&rsquo;s ratio, unimproved since 1962</p>
+          </div>
+          <aside class="margin"><span class="mark" aria-hidden="true">&#8258;</span>Attempts to improve the ratio: four. Survivors: none. The ratio stands.</aside>
+        </article>
+
+        <article class="entry">
+          <div class="body">
+            <span class="ordinal" aria-hidden="true">9</span>
+            <h3><span class="name">The Tipsy Bee &mdash; Hot Pickle</span><span class="leader" aria-hidden="true"></span><span class="price">$13</span></h3>
+            <p class="desc">Named for the helicopter: it, too, gets briefly airborne and comes down with a story. Garlic dills under Fresno chile and a rumor of habanero. Curtis&rsquo;s rule applies to aircraft and pickles alike &mdash; if your eyes water, it&rsquo;s working.<a class="fnref" id="fnref-6" href="#fn-6" aria-label="Footnote, pilcrow">&para;</a></p>
+            <p class="batch">Lot 94 &middot; pint &middot; wear something washable</p>
+          </div>
+          <aside class="margin" id="fn-6"><span class="mark">&para;</span>Not named after anyone&rsquo;s condition at the county fair. Officially.</aside>
+        </article>
+      </section>
+
+      <div class="notice" role="note">
+        <p><span class="sc">Sold from the farm stand</span> under the walnut tree, and Saturdays at the Medford growers&rsquo; market. The internet is not yet brine&#8209;proof; come by instead.</p>
+      </div>
+
+    </main>
+
+    <footer class="colophon">
+      <img class="pressmark" src="../assets/brand/logo.png" alt="Tipsy Bee Farms badge: a cartoon bee on a hexagon, the word TIPSY in heavy black letters." width="96" height="96">
+      <p class="setnote">Set in Fraunces, EB Garamond &amp; IBM Plex Mono on comb&#8209;wax stock, and pressed in a browser near Medford, Oregon.</p>
+      <nav class="sheets-nav" aria-label="The five sheets of Tipsy Bee Farms">
+        <p>This is one sheet of five printed matters from this farm &mdash;</p>
+        <ul>
+          <li><a href="../hive/">The Hive</a> <span class="sc">where the bees are</span></li>
+          <li><a href="../orchard/">The Orchard</a> <span class="sc">where it began</span></li>
+          <li><a href="../lineage/">The Lineage</a> <span class="sc">who did what</span></li>
+          <li class="here" aria-current="page">The Cellar <span class="sc">the sheet in your hands</span></li>
+          <li><a href="../arcade/">The Arcade</a> <span class="sc">where you pedal</span></li>
+        </ul>
+      </nav>
+      <p class="fineprint">Contains honey. May contain opinions. Store the meads on their side and the family stories upright.</p>
+    </footer>
+
+  </div>
+</div>
+
+<button class="grid-toggle" type="button" aria-pressed="false" aria-label="Show the baseline grid">&para; grid</button>
+
+<script>
+// Small typographic niceties only — this sheet is set by hand otherwise.
+(function(){
+  'use strict';
+  // 1. The pressman's grid toggle: reveal the baseline ruling the sheet is set on.
+  var btn = document.querySelector('.grid-toggle');
+  btn.addEventListener('click', function(){
+    var on = document.body.classList.toggle('grid-on');
+    btn.setAttribute('aria-pressed', String(on));
+    btn.setAttribute('aria-label', (on ? 'Hide' : 'Show') + ' the baseline grid');
+  });
+
+  // 2. The widow slayer: no provision ends on a word alone.
+  //    (Skips space-less terminal nodes, e.g. footnote marks, and ties the
+  //     last two words of the last real text run together.)
+  document.querySelectorAll('.desc, .batch, .setnote, .notice p, .margin, .preface .inner p').forEach(function(p){
+    var walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), node, last = null;
+    while ((node = walker.nextNode())) {
+      if (node.textContent.trim() && / /.test(node.textContent.trim())) last = node;
+    }
+    if (last) last.textContent = last.textContent.replace(/[ ]+(?=\S+[\s]*$)/, '\u00A0');
+  });
+
+  // 3. The compositor's justification: every entry is carded out to the next
+  //    full line of the baseline grid, so the ruling holds below tipped-in
+  //    objects and stamps.
+  function snapToGrid(){
+    var bl = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bl'));
+    if (!bl) return;
+    document.querySelectorAll('.entry, .dept-head, .preface').forEach(function(el){
+      el.style.paddingBottom = '';
+      var rem = el.getBoundingClientRect().height % bl;
+      if (rem > 0.5 && rem < bl - 0.5) el.style.paddingBottom = (bl - rem) + 'px';
+    });
+  }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(snapToGrid); }
+  else { snapToGrid(); }
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(snapToGrid, 120); });
+})();
+</script>
+</body>
+</html>

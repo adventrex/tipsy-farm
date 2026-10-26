@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Send a Quest — Tipsy Bee Farms</title>
+<meta name="description" content="Write the farm. Choose your class, set your stats, send a quest — wholesale, farm visits, or arguments about pickle heat." />
+<link rel="icon" href="../assets/brand/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--honey:#f5b426;--amber:#b8730e;--wax:#fbe7a1;--ink:#140d04;--cream:#fbf3de;--green:#4e6b34;--coral:#e0574c;--violet:#7a5cc4;--ease:cubic-bezier(.16,1,.3,1)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(90% 70% at 50% 0%,#2a1c07 0%,transparent 60%),#0d0803;color:var(--cream);
+    font-family:"Inter",system-ui,sans-serif;line-height:1.6;min-height:100svh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit}
+  ::selection{background:var(--honey);color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:clamp(20px,4vw,52px)}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:clamp(28px,5vh,56px)}
+  header a.b{display:flex;align-items:center;gap:14px;text-decoration:none;margin-right:auto}
+  header img{width:48px;height:48px;filter:drop-shadow(0 4px 10px #000a)}
+  header b{font-family:"Fraunces",serif;font-weight:900;font-size:20px;display:block}
+  header small{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--honey)}
+  header .back{font-size:13px;color:#cdbb8f;text-decoration:none;border-bottom:1px solid #f5b42644}
+  header .back:hover,header .back:focus-visible{color:var(--honey);border-color:var(--honey)}
+  h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(34px,6vw,64px);line-height:1.04;letter-spacing:-.02em}
+  h1 em{color:var(--honey);font-weight:500}
+  .lede{max-width:56ch;color:#d8c9a3;margin:14px 0 clamp(26px,4vh,44px)}
+  .grid{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(18px,3vw,36px);align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,#1c1307,#150e05);border:1px solid #f5b42633;border-radius:18px;padding:clamp(18px,2.6vw,30px)}
+  .card h2{font-family:"Fraunces",serif;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--honey);font-weight:700;margin-bottom:14px}
+  .classes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .cls{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:14px 8px;border-radius:12px;border:1px solid #f5b42626;
+    background:#0f0a04;transition:border-color .3s,background .3s,transform .3s var(--ease)}
+  .cls:hover,.cls:focus-visible{border-color:var(--honey);transform:translateY(-2px)}
+  .cls[aria-pressed="true"]{border-color:var(--honey);background:#2a1c07;box-shadow:0 0 0 1px var(--honey) inset}
+  .cls .ic{font-size:30px;display:block;line-height:1.2}
+  .cls b{font-family:"Fraunces",serif;font-size:14px;display:block;margin-top:4px}
+  #desc{margin-top:14px;min-height:3.2em;font-size:14px;color:#d8c9a3;font-style:italic}
+  .stat{margin-top:16px}
+  .stat label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--wax)}
+  input[type=range]{width:100%;accent-color:var(--honey);margin-top:6px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wax);margin-bottom:6px;font-weight:600}
+  .field input,.field textarea{width:100%;background:#0d0803;border:1px solid #f5b42633;border-radius:10px;color:var(--cream);
+    padding:12px 14px;font:inherit;font-size:15px}
+  .field input:focus,.field textarea:focus{outline:2px solid var(--honey);outline-offset:1px}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#d8c9a3;margin-bottom:18px}
+  .check input{margin-top:3px;accent-color:var(--honey)}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  button.go{all:unset;box-sizing:border-box;cursor:pointer;width:100%;text-align:center;background:var(--honey);color:var(--ink);font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;font-size:14px;padding:15px;border-radius:12px;transition:transform .3s var(--ease),background .3s}
+  button.go:hover,button.go:focus-visible{background:#ffc94a;transform:translateY(-2px)}
+  button.go[disabled]{opacity:.6;cursor:wait}
+  .msg{margin-top:14px;font-size:14px;padding:12px 14px;border-radius:10px}
+  .msg.err{background:#3a1410;border:1px solid var(--coral)}
+  .msg.ok{background:#1b2a12;border:1px solid var(--green)}
+  [hidden]{display:none!important}
+  dialog{margin:auto;border:1px solid var(--honey);border-radius:16px;background:#1c1307;color:var(--cream);padding:26px;max-width:min(92vw,420px)}
+  dialog::backdrop{background:#000a}
+  dialog h3{font-family:"Fraunces",serif;margin-bottom:8px}
+  dialog .row{display:flex;gap:10px;margin-top:18px}
+  dialog button{all:unset;box-sizing:border-box;cursor:pointer;flex:1;text-align:center;padding:11px;border-radius:10px;border:1px solid var(--honey);font-weight:600;font-size:14px}
+  dialog button.p{background:var(--honey);color:var(--ink)}
+  footer{margin-top:clamp(36px,6vh,64px);font-size:13px;color:#a8996f;border-top:1px solid #f5b42622;padding-top:18px}
+  footer a{color:#cdbb8f}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <a class="b" href="../"><img src="../assets/brand/logo.png" alt="Tipsy Bee Farms hexagonal bee badge" /><span><b>Tipsy Bee Farms</b><small>Rogue Valley · Oregon</small></span></a>
+    <a class="back" href="../#visit">← back to the estate</a>
+  </header>
+
+  <main>
+    <h1>Send a <em>quest.</em></h1>
+    <p class="lede">Wholesale, a farm visit, or a heated argument about pickle heat levels. Choose your class, set your stats if you feel like it, and tell us what you're after. Only the message is required.</p>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="h-class">
+        <h2 id="h-class">Choose your class</h2>
+        <div class="classes" role="group" aria-label="Class">
+          <button type="button" class="cls" data-c="Pickle Wizard" aria-pressed="false"><span class="ic" aria-hidden="true">🧙</span><b>Pickle Wizard</b></button>
+          <button type="button" class="cls" data-c="Honey Warrior" aria-pressed="false"><span class="ic" aria-hidden="true">⚔️</span><b>Honey Warrior</b></button>
+          <button type="button" class="cls" data-c="Fermentation Druid" aria-pressed="false"><span class="ic" aria-hidden="true">🌿</span><b>Fermentation Druid</b></button>
+          <button type="button" class="cls" data-c="Spice Ranger" aria-pressed="false"><span class="ic" aria-hidden="true">🌶️</span><b>Spice Ranger</b></button>
+        </div>
+        <p id="desc" aria-live="polite">Pick a class. Or don't. The farm judges nobody.</p>
+
+        <h2 style="margin-top:26px">Assign your stats</h2>
+        <p style="font-size:12px;color:#a8996f">Push one up and the others give way. Points are conserved, like the brine.</p>
+        <div id="stats"></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-form">
+        <h2 id="h-form">Register your identity</h2>
+        <form id="f" novalidate>
+          <div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" maxlength="60" placeholder="What do they call you?" /></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="Where shall we send your reply?" /></div>
+          <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="541-___-____" /></div>
+          <div class="field"><label for="message">Your quest <span aria-hidden="true">*</span></label><textarea id="message" name="message" rows="5" maxlength="1000" required placeholder="Tell us what you're after…"></textarea></div>
+          <div class="hp" aria-hidden="true"><label>Leave empty <input id="website" tabindex="-1" autocomplete="off" /></label></div>
+          <label class="check"><input type="checkbox" id="news" checked /> <span>Send me the occasional dispatch from the farm. No spam, ever.</span></label>
+          <button class="go" id="send" type="submit">⚔ Begin quest ⚔</button>
+          <div id="out" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer>Prefer plain email? <a href="mailto:hello@tipsy.farm">hello@tipsy.farm</a> · Medford, Oregon · <a href="../">The estate</a> · <a href="../rooms/">The rooms</a></footer>
+</div>
+
+<dialog id="anon">
+  <h3>Anonymous dispatch</h3>
+  <p style="font-size:14px;color:#d8c9a3">No name or email — we won't be able to write back. Send it anyway?</p>
+  <div class="row"><button type="button" id="anon-no">Add my info</button><button type="button" class="p" id="anon-yes">Send anonymously</button></div>
+</dialog>
+
+<script>
+(() => {
+  // Google Apps Script web app (logs to a Sheet + emails the farm). If it ever fails the page offers mailto instead.
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyw03CxSAitvRG5AwB5Ga4Dexpfze4KIbG_fAGgscD435ELQvDh1zigbE2c-v7Vnc6E/exec';
+  const DESCS = {
+    'Pickle Wizard': 'Brine is just spellcraft with salt. You want the recipe; we will say no, kindly.',
+    'Honey Warrior': 'You fight for the good stuff: raw, wildflower, and never cut with syrup.',
+    'Fermentation Druid': 'You hear the jars burp and call it music. You and the crock are going to get along.',
+    'Spice Ranger': 'You read the Kraken label and thought, "only?" Welcome.'
+  };
+  const STATS = ['Spice', 'Pickle IQ', 'Buzz', 'Farm Loyalty'];
+  const $ = id => document.getElementById(id);
+  let cls = '';
+  const vals = STATS.map(() => 25);
+
+  // class picker
+  document.querySelectorAll('.cls').forEach(b => b.addEventListener('click', () => {
+    cls = b.dataset.c;
+    document.querySelectorAll('.cls').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('desc').textContent = DESCS[cls];
+  }));
+
+  // stat sliders: total stays 100, others redistribute proportionally
+  const host = $('stats'), rngs = [], outs = [];
+  STATS.forEach((s, i) => {
+    const d = document.createElement('div'); d.className = 'stat';
+    d.innerHTML = `<label for="s${i}">${s}<span id="o${i}">25</span></label><input type="range" id="s${i}" min="0" max="100" value="25" />`;
+    host.appendChild(d);
+    rngs.push(d.querySelector('input')); outs.push(d.querySelector('span'));
+    rngs[i].addEventListener('input', () => set(i, +rngs[i].value));
+  });
+  function set(i, v) {
+    const rest = vals.reduce((a, x, j) => j === i ? a : a + x, 0), target = 100 - v;
+    vals[i] = v;
+    vals.forEach((x, j) => { if (j !== i) vals[j] = rest ? Math.round(x * target / rest) : Math.round(target / 3); });
+    const drift = 100 - vals.reduce((a, b) => a + b, 0);
+    if (drift) { const k = vals.findIndex((_, j) => j !== i && vals[j] + drift >= 0); if (k >= 0) vals[k] += drift; }
+    vals.forEach((x, j) => { rngs[j].value = x; outs[j].textContent = x; });
+  }
+
+  // submit
+  let pending = false;
+  async function send() {
+    if (pending) return; pending = true;
+    const btn = $('send'), out = $('out'); btn.disabled = true; out.innerHTML = '';
+    const payload = {
+      name: $('name').value.trim(), email: $('email').value.trim(), phone: $('phone').value.trim(),
+      message: $('message').value.trim(), class: cls || 'None selected',
+      spice: vals[0], pickle: vals[1], buzz: vals[2], loyalty: vals[3],
+      newsletter: $('news').checked, _subject: 'New Quest — Tipsy Bee Farms'
+    };
+    try {
+      await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      out.innerHTML = '<p class="msg ok"><b>Quest accepted.</b> The farm will get back to you — pickles permitting.</p>';
+      $('f').reset(); cls = ''; document.querySelectorAll('.cls').forEach(x => x.setAttribute('aria-pressed', 'false'));
+      $('desc').textContent = 'Pick a class. Or don’t. The farm judges nobody.'; set(0, 25);
+    } catch (e) {
+      const body = encodeURIComponent(payload.message + '\n\n— ' + (payload.name || 'anonymous') + ' ' + payload.email);
+      out.innerHTML = '<p class="msg err">The raven got lost. Email us directly: <a href="mailto:hello@tipsy.farm?subject=Quest&body=' + body + '">hello@tipsy.farm</a></p>';
+    } finally { btn.disabled = false; pending = false; }
+  }
+  $('f').addEventListener('submit', e => {
+    e.preventDefault();
+    if ($('website').value) return;                       // honeypot
+    const out = $('out');
+    if (!$('message').value.trim()) { out.innerHTML = '<p class="msg err">A quest needs a message. Tell us what you’re after.</p>'; $('message').focus(); return; }
+    const em = $('email').value.trim();
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { out.innerHTML = '<p class="msg err">That email doesn’t look right.</p>'; $('email').focus(); return; }
+    if (!$('name').value.trim() && !em) { $('anon').showModal(); return; }
+    send();
+  });
+  $('anon-no').onclick = () => { $('anon').close(); $('name').focus(); };
+  $('anon-yes').onclick = () => { $('anon').close(); send(); };
+})();
+</script>

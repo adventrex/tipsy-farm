@@ -1,0 +1,220 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tipsy Bee Farms — five rooms of one farm</title>
+<meta name="description" content="One family farm, told five ways: a living hive, a growing orchard, a VHS biography, a letterpress larder, and a playable helicopter." />
+<link rel="icon" href="../assets/brand/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --honey: #f5b426; --amber: #b8730e; --wax: #fbe7a1;
+    --ink: #140d04; --cream: #fbf3de; --green: #4e6b34;
+    --violet: #7a5cc4; --coral: #e0574c;
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(90% 70% at 50% 0%, #2a1c07 0%, transparent 60%),
+      radial-gradient(80% 60% at 85% 100%, #1d1206 0%, transparent 60%),
+      #0d0803;
+    color: var(--cream); font-family: "Inter", system-ui, sans-serif;
+    min-height: 100svh; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+
+  /* faint hex-grid ground */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 56 16.17v32.33L28 64.67 0 48.5V16.17zM28 64.67v32.33M0 48.5l-28 16.17M56 48.5l28 16.17' fill='none' stroke='%23f5b426' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 56px 97px;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: clamp(22px, 4vw, 56px); position: relative; }
+
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: clamp(34px, 6vh, 70px); }
+  header img { width: 52px; height: 52px; filter: drop-shadow(0 4px 10px #000a); }
+  header .t b { font-family: "Fraunces", serif; font-weight: 900; font-size: 21px; display: block; }
+  header .t span { font-size: 10.5px; letter-spacing: .32em; text-transform: uppercase; color: var(--honey); }
+
+  .hero { max-width: 720px; margin-bottom: clamp(40px, 7vh, 84px); }
+  .hero h1 { font-family: "Fraunces", serif; font-weight: 900; letter-spacing: -.02em; line-height: .95;
+             font-size: clamp(42px, 6.4vw, 78px); }
+  .hero h1 em { font-style: italic; font-weight: 500; color: var(--honey); }
+  .hero p { margin-top: 20px; font-size: clamp(15.5px, 1.6vw, 18px); line-height: 1.65; color: #e8dcc0; max-width: 56ch; }
+  .hero p b { color: var(--wax); font-weight: 600; }
+
+  /* ---------- honeycomb ---------- */
+  .comb { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 22px);
+          list-style: none; }
+  .cell { position: relative; }
+  /* stagger middle column down for a comb feel */
+  @media (min-width: 861px) {
+    .cell:nth-child(2) { transform: translateY(34px); }
+    .cell:nth-child(5) { transform: translateY(34px); }
+  }
+  .cell a {
+    display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    gap: 7px; text-align: center;
+    aspect-ratio: .92; padding: 8% 14% 24%;   /* deep bottom padding keeps text out of the hex point */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    text-decoration: none; overflow: hidden; position: relative;
+    background: var(--bg, #221605);
+    transition: transform .7s var(--ease-out), filter .7s var(--ease-out);
+    outline-offset: 4px;
+  }
+  .cell a:hover, .cell a:focus-visible { transform: translateY(-8px) scale(1.02); filter: brightness(1.13); }
+  .cell a::after {  /* inner hex rim */
+    content: ""; position: absolute; inset: 4px; pointer-events: none;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    box-shadow: inset 0 0 0 1.5px #fbe7a144;
+  }
+  .cell .no { position: absolute; top: 16%; left: 50%; transform: translateX(-50%);
+              font-family: "Fraunces", serif; font-style: italic; font-weight: 500;
+              font-size: 13px; color: #fff9; letter-spacing: .1em; }
+  .cell h2 { font-family: "Fraunces", serif; font-weight: 900; font-size: clamp(22px, 2.6vw, 34px);
+             letter-spacing: -.01em; color: #fff; text-shadow: 0 2px 16px #000b; }
+  .cell p { font-size: clamp(11.5px, 1.15vw, 13.5px); line-height: 1.5; color: #ffffffd9;
+            text-shadow: 0 1px 10px #000a; max-width: 26ch; }
+  .cell .tag { font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: var(--wax);
+               text-shadow: 0 1px 8px #000; }
+
+  /* per-cell worlds */
+  .hive-c    { --bg: radial-gradient(120% 100% at 50% 22%, #5a3a0a, #1a1004 72%); }
+  .hive-c a::before { content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(40% 30% at 50% 32%, #f5b42626, transparent 70%),
+                      radial-gradient(4px 7px at 24% 30%, #ffd25e, transparent 65%),
+                      radial-gradient(4px 7px at 68% 22%, #f5b426e0, transparent 65%),
+                      radial-gradient(4px 7px at 44% 46%, #f5b426cc, transparent 65%),
+                      radial-gradient(4px 7px at 80% 52%, #ffd25ee0, transparent 65%),
+                      radial-gradient(4px 7px at 33% 58%, #f5b426bb, transparent 65%),
+                      radial-gradient(4px 7px at 58% 36%, #ffca4ce8, transparent 65%);
+  }
+  .orchard-c { --bg: linear-gradient(168deg, #f7eed3 0%, #efe1b8 100%); }
+  .orchard-c h2 { color: #23301a; text-shadow: none; }
+  .orchard-c p { color: #3c4a2b; text-shadow: none; }
+  .orchard-c .tag { color: #7c5b12; text-shadow: none; }
+  .orchard-c .no { color: #23301a99; }
+  .orchard-c a::before { content: ""; position: absolute; inset: 0; opacity: .9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='140' viewBox='0 0 200 140'%3E%3Cpath d='M100 138 C 96 122 92 108 88 96 C 80 74 62 60 48 52 M88 96 C 96 74 112 62 132 54 M88 96 C 90 80 88 66 80 50' fill='none' stroke='%234e6b34' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='48' cy='50' r='7' fill='%23c9a227'/%3E%3Ccircle cx='134' cy='52' r='7' fill='%23c9a227'/%3E%3Ccircle cx='79' cy='47' r='6' fill='%234e6b34'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 50% 16%; background-size: 46%;
+  }
+  .lineage-c { --bg: linear-gradient(180deg, #131313, #060606); }
+  .lineage-c a::before { content: ""; position: absolute; inset: 0; opacity: .5;
+    background: repeating-linear-gradient(0deg, transparent 0 3px, #ffffff09 3px 4px); }
+  .lineage-c .rec { display: flex; align-items: center; gap: 6px; font-family: "Inter", monospace;
+    font-size: 10px; letter-spacing: .24em; color: #ff5b4d; margin-bottom: 2px; }
+  .lineage-c .rec i { width: 8px; height: 8px; border-radius: 50%; background: #ff5b4d;
+    animation: blink 1.4s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: .15; } }
+  .cellar-c  { --bg: linear-gradient(175deg, #fbf0cf, #f4e4b4); }
+  .cellar-c h2 { color: #241a08; text-shadow: none; }
+  .cellar-c p { color: #4a3a1a; text-shadow: none; }
+  .cellar-c .tag { color: #8a6410; text-shadow: none; }
+  .cellar-c .no { color: #241a0899; }
+  .cellar-c a::before { content: "№ 7"; position: absolute; top: 24%; left: 50%; transform: translateX(-50%);
+    font-family: "Fraunces", serif; font-size: 58px; font-weight: 500; color: #b8730e2e; white-space: nowrap; }
+  .arcade-c  { --bg: linear-gradient(180deg, #7a5cc4 0%, #e0574c 55%, #f5b426 100%); }
+  .arcade-c a::before { content: ""; position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
+    background: repeating-linear-gradient(0deg, transparent 0 2px, #00000044 2px 4px); }
+  .guide-c   { --bg: #17100699; }
+  .guide-c a { border: 0; }
+  .guide-c a::after { box-shadow: inset 0 0 0 1.5px #f5b42655; }
+  .guide-c h2 { font-size: clamp(18px, 2vw, 24px); color: var(--honey); }
+
+  footer { margin-top: clamp(48px, 8vh, 90px); display: flex; flex-wrap: wrap; gap: 12px;
+           justify-content: space-between; font-size: 12.5px; color: #b7a67f; line-height: 1.6; }
+  footer .col { max-width: 52ch; }
+  footer b { color: var(--wax); font-weight: 600; }
+
+  @media (max-width: 860px) {
+    .comb { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .comb { grid-template-columns: 1fr; max-width: 340px; }
+    .cell a { aspect-ratio: 1.04; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell a { transition: none; }
+    .lineage-c .rec i { animation: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <img src="../assets/brand/logo.png" alt="Tipsy Bee Farms hexagonal bee badge" />
+    <div class="t"><b>Tipsy Bee Farms</b><span>Rogue Valley, Oregon</span></div>
+  </header>
+
+  <section class="hero">
+    <h1>One farm.<br /><em>Five rooms.</em></h1>
+    <p>
+      We're a four-generation family farm with a history of building things that have no
+      business flying — including, in 1994, a <b>human-powered helicopter</b> pedaled across
+      a Boeing hangar floor. This site works the same way: five rooms, each built by hand,
+      each proving something different. Pick a door.
+    </p>
+  </section>
+
+  <ul class="comb">
+    <li class="cell hive-c">
+      <a href="../hive/">
+        <span class="no">i.</span>
+        <span class="tag">The front door · WebGL</span>
+        <h2>Hive</h2>
+        <p>Four thousand live bees gather into the comb.</p>
+      </a>
+    </li>
+    <li class="cell orchard-c">
+      <a href="../orchard/">
+        <span class="no">ii.</span>
+        <span class="tag">The heritage · generative</span>
+        <h2>Orchard</h2>
+        <p>A Comice pear tree draws itself as you scroll.</p>
+      </a>
+    </li>
+    <li class="cell lineage-c">
+      <a href="../lineage/">
+        <span class="no">iii.</span>
+        <span class="rec"><i></i>REC</span>
+        <span class="tag">The saga · VHS documentary</span>
+        <h2>Lineage</h2>
+        <p>Four generations on tape. The photos are real.</p>
+      </a>
+    </li>
+    <li class="cell cellar-c">
+      <a href="../cellar/">
+        <span class="no">iv.</span>
+        <span class="tag">The larder · letterpress</span>
+        <h2>Cellar</h2>
+        <p>Honey, mead &amp; pickles, set in print-grade type.</p>
+      </a>
+    </li>
+    <li class="cell arcade-c">
+      <a href="../arcade/">
+        <span class="no">v.</span>
+        <span class="tag">The love letter · playable</span>
+        <h2>Arcade</h2>
+        <p>Pedal the Tipsy Bee. Beat the 1994 record.</p>
+      </a>
+    </li>
+    <li class="cell guide-c">
+      <a href="../guide/">
+        <span class="tag">Colophon</span>
+        <h2>How this was built →</h2>
+        <p>One director, five studios, three critique passes each.</p>
+      </a>
+    </li>
+  </ul>
+
+  <footer>
+    <p class="col">
+      Every room is hand-built, static, and self-contained — no frameworks, no templates,
+      no shared components. The imagery in <b>Lineage</b> is our real family archive.
+    </p>
+    <p>Tipsy Bee Farms · Medford, Oregon · <a href="../quest/">Send a quest</a></p>
+  </footer>
+</div>

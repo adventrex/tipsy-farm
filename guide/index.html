@@ -1,0 +1,153 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How this was built — Tipsy Bee Farms</title>
+<meta name="description" content="One director, five studios, three critique passes each: the method behind the Tipsy Bee Farms five-room site." />
+<link rel="icon" href="../assets/brand/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --honey: #f5b426; --amber: #b8730e; --wax: #fbe7a1;
+    --ink: #140d04; --cream: #fbf3de; --paper: #17100a;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #100a04; color: #ece0c4; font-family: "Inter", system-ui, sans-serif;
+         line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  a { color: var(--honey); text-decoration-color: #f5b42655; text-underline-offset: 3px;
+      transition: text-decoration-color .4s var(--ease); }
+  a:hover, a:focus-visible { text-decoration-color: var(--honey); }
+
+  .page { max-width: 720px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 32px) 80px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: clamp(40px, 7vh, 72px); }
+  .crumb { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #ece0c4; }
+  .crumb img { width: 34px; height: 34px; }
+  .crumb b { font-family: "Fraunces", serif; font-weight: 700; font-size: 15px; }
+  .rooms { font-size: 12.5px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .rooms a { text-decoration: none; color: #cbb98d; }
+  .rooms a:hover { color: var(--honey); }
+
+  .kick { font-size: 11.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--honey); margin-bottom: 16px; }
+  h1 { font-family: "Fraunces", serif; font-weight: 900; font-size: clamp(34px, 6vw, 54px);
+       line-height: 1.02; letter-spacing: -.015em; color: var(--cream); margin-bottom: 22px; }
+  h1 em { font-style: italic; font-weight: 500; color: var(--honey); }
+  .lede { font-size: clamp(16px, 1.8vw, 18.5px); color: #d9cba6; max-width: 58ch; }
+
+  h2 { font-family: "Fraunces", serif; font-weight: 700; font-size: clamp(22px, 3vw, 28px);
+       color: var(--cream); margin: 56px 0 14px; letter-spacing: -.01em; }
+  h2::before { content: "⬡ "; color: var(--amber); font-size: .8em; }
+  p + p { margin-top: 14px; }
+  p b { color: var(--wax); font-weight: 600; }
+
+  ul.rules { margin: 16px 0 0 0; list-style: none; }
+  ul.rules li { padding: 10px 0 10px 26px; position: relative; border-bottom: 1px solid #f5b42614; }
+  ul.rules li::before { content: "—"; position: absolute; left: 0; color: var(--honey); }
+
+  pre { background: #0a0602; border: 1px solid #f5b42622; border-radius: 10px;
+        padding: 18px 20px; margin: 18px 0; overflow-x: auto;
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; line-height: 1.6; color: #d8c69a; }
+  pre .c { color: #8a7850; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14px; }
+  th { text-align: left; font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+       color: var(--honey); padding: 8px 12px 8px 0; border-bottom: 1px solid #f5b42633; }
+  td { padding: 10px 12px 10px 0; border-bottom: 1px solid #f5b42614; vertical-align: top; }
+  td:first-child { font-family: "Fraunces", serif; font-weight: 700; color: var(--cream); white-space: nowrap; }
+  td i { color: #cbb98d; }
+
+  .honest { margin-top: 56px; padding: 22px 26px; border: 1px solid #f5b42633; border-radius: 12px;
+            background: #f5b4260a; font-size: 14.5px; }
+  .honest b { color: var(--wax); }
+
+  footer { margin-top: 64px; font-size: 12.5px; color: #a5946e; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header class="top">
+    <a class="crumb" href="../"><img src="../assets/brand/logo.png" alt="" /><b>Tipsy Bee Farms</b></a>
+    <nav class="rooms" aria-label="Rooms">
+      <a href="../hive/">Hive</a><a href="../orchard/">Orchard</a><a href="../lineage/">Lineage</a><a href="../cellar/">Cellar</a><a href="../arcade/">Arcade</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="kick">Colophon</p>
+    <h1>One director,<br /><em>five studios.</em></h1>
+    <p class="lede">
+      This site is five separate, hand-built rooms for one real farm — built in an afternoon
+      by AI agents working the way a small design studio does: a shared constitution, individual
+      art direction, and a critique loop that looks at actual rendered pixels until the work
+      stops looking like it came from a machine.
+    </p>
+
+    <h2>The architecture</h2>
+    <p>
+      A single <b>director session</b> wrote a design constitution — real copy only, distinctive
+      type, custom easing, responsive, accessible, zero console errors — plus five individually
+      art-directed briefs. Each brief names a concept, a palette, typefaces, a signature
+      technique, and the one thing that room has to <i>prove</i>.
+    </p>
+    <p>
+      Four <b>parallel builder studios</b> (agents of the same model, Fable) each received one
+      brief and full autonomy over one folder. No templates, no shared components — deliberately,
+      so no two rooms converge. The director built the flagship first to set the bar, then
+      reviewed every studio's screenshots cold and sent work back with specific notes.
+    </p>
+
+    <h2>The critique loop</h2>
+    <p>
+      Every room went through <b>three mandatory passes</b>. One pass: render the real page in
+      headless Chrome at desktop and mobile sizes, top to bottom; read the screenshots with
+      vision and critique them like a hostile design director — rhythm, contrast, widows, dead
+      zones, anything that smells like “AI default”; fix everything found; then add <b>one
+      deliberate complexity upgrade</b> so iteration never converges on bland safety.
+    </p>
+    <pre><span class="c"># the whole harness is ~25 lines</span>
+node tools/shot.js http://localhost:4181/hive/ out.png 1440x900 4000 [scrollY]
+<span class="c">→ {"out":"out.png","docHeight":3834,"errors":[]}</span></pre>
+    <p>
+      Why it works: code review can't see a widow or a muddy button. The first render of the
+      Hive shipped as a wall of amber straw — its own screenshot critique caught it, thinned
+      the swarm, deepened the dark, and added the honeycomb lattice the bees now gather into.
+    </p>
+
+    <h2>The five rooms</h2>
+    <table>
+      <thead><tr><th>Room</th><th>Proves</th><th>Signature technique</th></tr></thead>
+      <tbody>
+        <tr><td><a href="../hive/">Hive</a></td><td><i>Live WebGL can be warm and legible</i></td><td>~4,200 GPU bees on a curl-noise flow field, gathering into a honeycomb lattice</td></tr>
+        <tr><td><a href="../orchard/">Orchard</a></td><td><i>Generative art can feel botanical</i></td><td>Seeded stochastic L-system pear tree, grown branch-by-branch on scroll</td></tr>
+        <tr><td><a href="../lineage/">Lineage</a></td><td><i>Real archives beat generated imagery</i></td><td>Scroll-driven VHS documentary; effects keyed to scroll velocity, serving real family photos</td></tr>
+        <tr><td><a href="../cellar/">Cellar</a></td><td><i>Restraint is a flex</i></td><td>Letterpress broadsheet: baseline grid, margin footnotes, paper grain in pure CSS/SVG</td></tr>
+        <tr><td><a href="../arcade/">Arcade</a></td><td><i>It can also just be fun</i></td><td>Playable human-powered-helicopter game; physics, fatigue, oscillator-synthesized sound</td></tr>
+      </tbody>
+    </table>
+
+    <h2>The farm is real</h2>
+    <p>
+      Tipsy Bee Farms is a four-generation family farm story from the Rogue Valley: Comice
+      pears by the mountain-load, a Navy officer who built gliders and then a human-powered
+      helicopter called the <b>Tipsy Bee</b> — pedaled across a Boeing hangar floor in August
+      1994 against a rival Japanese team — and a present generation that turned all that
+      tinkering toward bees, mead, and pickles. The photographs in
+      <a href="../lineage/">Lineage</a> are the family's actual archive, scanned from prints.
+    </p>
+
+    <div class="honest">
+      <b>Honesty note:</b> the rooms were built by AI (Fable 5) from a written constitution;
+      the family story and every archive photograph are real; the product copy in the Cellar
+      is written in the family's voice; nothing here uses a template, a framework, or a build
+      step. Fonts from Google Fonts, Three.js from a CDN, everything else is local and static.
+    </div>
+  </main>
+
+  <footer>
+    <span>Tipsy Bee Farms · Medford, Oregon</span>
+    <span><a href="../">← back to the comb</a></span>
+  </footer>
+</div>

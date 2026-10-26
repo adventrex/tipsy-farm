@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PEDAL, CURTIS, PEDAL! — Tipsy Bee Farms Arcade</title>
+<meta name="description" content="Pilot the Tipsy Bee, the human-powered helicopter Curtis really built. Pedal to hover, collect pollen, and outlast the 1994 Yuri I record. A playable love letter from Tipsy Bee Farms, Rogue Valley, Oregon.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l6 3.5v7L8 15l-6-3.5v-7z' fill='%23F5B426'/%3E%3Crect x='5' y='6' width='6' height='2' fill='%231A1206'/%3E%3Crect x='5' y='9' width='6' height='2' fill='%231A1206'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#cabinet">Skip to the game</a>
+
+<header class="site-head">
+  <a href="../">TIPSY BEE FARMS</a>
+  <p class="meta">Est. photo stamp 94-8-27 · Rogue Valley, Oregon</p>
+</header>
+
+<main>
+  <section class="cab-wrap" aria-label="The arcade cabinet" id="cabinet">
+    <div class="cabinet">
+
+      <div class="marquee">
+        <span class="bulbs" aria-hidden="true"></span>
+        <img src="../assets/brand/logo.png" alt="Tipsy Bee Farms hexagonal bee badge">
+        <h1>PEDAL, CURTIS, PEDAL!</h1>
+        <p class="tag">THE HUMAN-POWERED HELICOPTER GAME · A TIPSY BEE FARMS COIN-OP</p>
+      </div>
+
+      <div class="bezel">
+        <div class="screen">
+          <canvas id="game" width="320" height="240" role="img"
+            aria-label="Tipsy Bee flight field: a pedal-powered helicopter hovering over a pixel Rogue Valley at sunset."></canvas>
+          <div class="fx fx-scan" aria-hidden="true"></div>
+          <div class="fx fx-vig" aria-hidden="true"></div>
+          <div class="fx fx-glare" aria-hidden="true"></div>
+
+          <div class="ov" id="ovAttract">
+            <div class="panel att-top">
+              <h2>PEDAL, CURTIS, PEDAL!</h2>
+              <p class="sub">KEEP THE TIPSY BEE OFF THE HANGAR FLOOR</p>
+            </div>
+            <div aria-hidden="true"></div>
+            <div class="panel att-bot">
+              <ul>
+                <li>Mash <strong>SPACE</strong> (or the big PEDAL button) to spin the rotor</li>
+                <li>Stay airborne — every second scores. Pollen = points + fresh legs</li>
+                <li>Fly low: the floor&rsquo;s cushion of air makes lift cheap</li>
+              </ul>
+              <p class="press blink">PRESS START</p>
+              <p class="best" id="attractBest">HOUSE BEST — STILL OPEN</p>
+            </div>
+          </div>
+
+          <div class="ov" id="ovPause" hidden>
+            <div class="panel">
+              <h2>PAUSED</h2>
+              <p>The rotor waits. Your legs thank you.</p>
+              <button class="btn-ui" id="btnResume" type="button">RESUME (P)</button>
+            </div>
+          </div>
+
+          <div class="ov" id="ovOver" hidden>
+            <div class="panel">
+              <h2>FLIGHT OVER</h2>
+              <dl class="stats">
+                <dt>AIRTIME</dt><dd id="stTime">0.00s</dd>
+                <dt>PEAK ALT</dt><dd id="stPeak">0 in</dd>
+                <dt>POLLEN</dt><dd id="stPollen">0</dd>
+                <dt>SCORE</dt><dd id="stScore">000000</dd>
+                <dd class="beat" id="beatLine"></dd>
+              </dl>
+              <table class="hi-table">
+                <caption>HANGAR RECORDS</caption>
+                <tbody id="hiRows"></tbody>
+              </table>
+              <button class="btn-ui" id="btnRetry" type="button">FLY AGAIN</button>
+            </div>
+          </div>
+
+          <div class="ov" id="ovEntry" hidden>
+            <div class="panel">
+              <h2>NEW HANGAR RECORD</h2>
+              <p>Sign the fuselage, pilot.</p>
+              <div class="slots">
+                <label class="sr-only" for="ini1">First initial</label>
+                <input id="ini1" maxlength="1" autocomplete="off" autocapitalize="characters" inputmode="text">
+                <label class="sr-only" for="ini2">Second initial</label>
+                <input id="ini2" maxlength="1" autocomplete="off" autocapitalize="characters" inputmode="text">
+                <label class="sr-only" for="ini3">Third initial</label>
+                <input id="ini3" maxlength="1" autocomplete="off" autocapitalize="characters" inputmode="text">
+              </div>
+              <p class="entry-hint">Type letters, or use ↑ ↓ to spin them like a proper cabinet.</p>
+              <button class="btn-ui" id="btnOk" type="button">CARVE IT IN</button>
+            </div>
+          </div>
+
+          <div class="sr-only" id="srStatus" role="status" aria-live="polite"></div>
+        </div>
+        <p class="bezel-badge">TIPSY BEE · MODEL 94-8-27 · BOEING HANGAR SPEC<span class="led" aria-hidden="true"></span></p>
+      </div>
+
+      <div class="deck">
+        <div class="cluster">
+          <button class="btn-round" id="btnStart" type="button">START</button>
+          <span class="lbl">ONE PILOT</span>
+        </div>
+        <p class="deck-help" id="deckHelp">
+          Mash <kbd>SPACE</kbd> — or hammer the PEDAL button — to spin the rotor.
+          Fresh legs fade; pollen brings them back; the floor&rsquo;s cushion of air is your friend.
+          <kbd>P</kbd> pauses. <kbd>M</kbd> mutes.
+        </p>
+        <div class="cluster">
+          <button class="btn-round" id="btnPedal" type="button">PEDAL</button>
+          <span class="lbl">LEG ENGINE</span>
+        </div>
+        <div class="pills">
+          <button class="pill" id="btnMute" type="button" aria-pressed="true">SOUND ON</button>
+          <button class="pill" id="btnPause" type="button">PAUSE</button>
+        </div>
+      </div>
+
+      <div class="coin">
+        <span class="slot" aria-hidden="true"></span>
+        <p>NO QUARTERS REQUIRED — PEDALING IS FREE</p>
+        <span class="slot" aria-hidden="true"></span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="plaque" aria-labelledby="storyHead">
+    <p class="kicker">CABINET PLAQUE · TRUE STORY</p>
+    <h2 id="storyHead">The machine was real</h2>
+    <p>
+      In August 1994 — the snapshot is date-stamped <strong>94-8-27</strong> — Curtis wheeled a
+      human-powered helicopter across a Boeing hangar floor. Navy officer, orchardist, lifelong
+      builder of model airplanes, he had spent months turning bicycle parts and balsa-wood thinking
+      into a rotor you could drive with your own legs. He named it the <strong>Tipsy Bee</strong>.
+      The family has never fully explained why, and we have stopped asking.
+    </p>
+    <p>
+      His son <strong>Andrew</strong> supplied the engine: two legs, pedaling at Boeing Field until they
+      burned. Across the Pacific, a rival crew from Nihon University had already set the mark that
+      haunted every hangar — the <strong>Yuri I</strong>, aloft for <strong>19.46 seconds</strong>.
+      That is the whole sport. Human-powered helicopters do not soar; they tremble a few inches off
+      the concrete while a stopwatch runs and everybody forgets to breathe. Every second is a victory lap.
+    </p>
+    <p>
+      The title is the family chant — it is what gets yelled at whoever is in the seat.
+      This game is a love letter, not a parody. The farm still names its machines.
+    </p>
+    <p class="foot">
+      <strong>Ground effect is real physics, not arcade physics:</strong> a rotor hovering within its
+      own span of the floor rides a cushion of pressed air. The Tipsy Bee lived on that cushion.
+      In the game, so will you — stay low and the lift comes easier.
+    </p>
+  </section>
+
+  <section class="records" aria-label="Records">
+    <div class="card">
+      <h3>THE MARK TO BEAT</h3>
+      <p>YURI I · NIHON UNIV.<br><span>19.46 SECONDS</span> · 1994</p>
+    </div>
+    <div class="card">
+      <h3>HOUSE BEST</h3>
+      <p id="plaqueBest">NOBODY YET. THE SEAT IS YOURS.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="rooms" aria-label="The other Tipsy Bee rooms">
+  <h2>INSERT COIN → OTHER ROOMS</h2>
+  <ol>
+    <li><a href="../hive/"><span class="num">01</span><span class="name">THE HIVE</span><span class="tag">the swarm at the front door</span></a></li>
+    <li><a href="../orchard/"><span class="num">02</span><span class="name">THE ORCHARD</span><span class="tag">a pear tree draws itself</span></a></li>
+    <li><a href="../lineage/"><span class="num">03</span><span class="name">THE LINEAGE</span><span class="tag">four generations, VHS-transferred</span></a></li>
+    <li><a href="../cellar/"><span class="num">04</span><span class="name">THE CELLAR</span><span class="tag">honey, mead &amp; pickles, letterpressed</span></a></li>
+    <li><a href="../arcade/" aria-current="page"><span class="num">05</span><span class="name">THE ARCADE</span><span class="tag">◄ you are here · insert nothing</span></a></li>
+  </ol>
+</nav>
+
+<footer>
+  <p>TIPSY BEE FARMS · Rogue Valley — Medford, Oregon</p>
+  <p>Flight, fermentation, family. Cabinet built by the same people who name their machines.</p>
+</footer>
+
+<script src="game.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Orchard — Tipsy Bee Farms</title>
+<meta name="description" content="Everything at Tipsy Bee Farms descends from a Comice pear tree. Scroll, and one grows — seeded, stochastic, never the same tree twice. Rogue Valley, Medford, Oregon.">
+<meta name="theme-color" content="#FBF3DE">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4c1 3-2 5-2 8 0 1-4 2-4 9 0 4 3 7 6 7s6-3 6-7c0-7-4-8-4-9 0-3 3-5 2-8z' fill='%234E6B34'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF3DE; --paper-hi:#FFF9EA; --ink:#1A1206; --sepia:#46311C; --sepia-soft:#6B5233;
+  --green:#4E6B34; --green-deep:#3A5226; --gold:#D99A2B; --gold-deep:#8A5E10;
+  --dusk:#201409; --dusk-cream:#EFDFBB;
+  --ease-swell:cubic-bezier(.22,.9,.28,1);
+  --ease-pop:cubic-bezier(.34,1.42,.44,1);
+  --ease-settle:cubic-bezier(.45,.02,.18,1);
+  --serif:"EB Garamond",Georgia,serif;
+  --display:"Fraunces",Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper)}
+@media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} }
+body{
+  font-family:var(--serif); color:var(--ink); background:var(--paper);
+  font-size:1.11rem; line-height:1.62; overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:#F5B426;color:#1A1206}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:1px}
+img{max-width:100%;height:auto;display:block}
+
+/* paper grain over everything */
+body::after{
+  content:""; position:fixed; inset:0; z-index:60; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.24 0 0 0 0 0.13 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.16; mix-blend-mode:multiply;
+}
+
+.skip{
+  position:absolute; left:1rem; top:-4rem; z-index:80; background:var(--paper-hi);
+  border:1px solid var(--sepia); padding:.5em 1em; font-size:.85rem;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink); text-decoration:none;
+  transition:top .3s var(--ease-pop);
+}
+.skip:focus{top:1rem}
+
+/* ---------- header ---------- */
+.site-head{
+  position:absolute; top:0; left:0; right:0; z-index:20;
+  padding:1.1rem 1.4rem .9rem;
+  background:linear-gradient(to bottom, rgba(251,243,222,.94) 55%, rgba(251,243,222,0));
+}
+.site-head nav{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.4rem 1.5rem; max-width:82rem; margin:0 auto}
+.wordmark{
+  font-family:var(--display); font-weight:600; font-size:1.02rem; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink); white-space:nowrap;
+}
+.wordmark .bee{color:var(--gold-deep)}
+.site-head ul{display:flex; flex-wrap:wrap; gap:.1rem 1.4rem; list-style:none}
+.site-head a{
+  font-size:.78rem; letter-spacing:.17em; text-transform:uppercase; text-decoration:none;
+  color:var(--sepia); padding:.2em 0; border-bottom:2px solid transparent;
+  transition:color .3s var(--ease-settle), border-color .3s var(--ease-settle);
+}
+.site-head a:hover{color:var(--green-deep); border-color:var(--gold)}
+.site-head a[aria-current="page"]{color:var(--green-deep); border-color:var(--gold); font-weight:600}
+
+/* ---------- the growing tree ---------- */
+.tree-scroll{position:relative}
+.stage{
+  position:sticky; top:0; height:100vh; height:100svh;
+  margin-bottom:-100vh; margin-bottom:-100svh;
+  z-index:0; overflow:hidden;
+}
+.stage canvas{display:block; width:100%; height:100%}
+.overlays{position:relative; z-index:2}
+
+.chapter{
+  min-height:135vh; display:flex; align-items:center; padding:0 6vw;
+}
+.chapter.right{justify-content:flex-end}
+.chapter.left{justify-content:flex-start}
+
+.hero{
+  min-height:100vh; min-height:100svh; flex-direction:column; justify-content:center;
+  align-items:center; text-align:center; padding:5.5rem 1.4rem 4rem; position:relative;
+}
+.kicker{
+  font-size:.74rem; letter-spacing:.24em; text-transform:uppercase; color:var(--green-deep);
+  font-weight:600; display:block; margin-bottom:1.1rem;
+}
+.hero h1{
+  font-family:var(--display); font-weight:560; font-variation-settings:"SOFT" 40,"WONK" 1;
+  font-size:clamp(2.5rem, 6.2vw, 4.6rem); line-height:1.04; max-width:17ch;
+  text-shadow:0 1px 0 var(--paper), 0 0 22px rgba(251,243,222,.95), 0 0 8px rgba(251,243,222,.9);
+}
+.hero .lede{
+  max-width:42ch; margin-top:1.5rem; font-size:1.16rem; color:var(--sepia);
+  text-shadow:0 1px 0 rgba(251,243,222,.9), 0 0 14px rgba(251,243,222,.85);
+}
+.hero .lede em{color:var(--green-deep)}
+.hero-note{
+  margin-top:2.2rem; font-style:italic; font-size:.98rem; color:var(--sepia-soft); max-width:40ch;
+  text-shadow:0 1px 0 rgba(251,243,222,.9);
+}
+.cue{
+  position:absolute; bottom:4.5rem; left:50%; transform:translateX(-50%);
+  font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--sepia-soft);
+  display:flex; flex-direction:column; align-items:center; gap:.5rem;
+}
+.cue svg{width:14px;height:22px}
+@media (prefers-reduced-motion: no-preference){
+  .cue svg{animation:bob 2.6s var(--ease-settle) infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}55%{transform:translateY(7px)}}
+}
+
+.card{
+  max-width:25.5rem; background:rgba(251,243,222,.965);
+  border:1px solid rgba(70,49,28,.4); padding:1.7rem 1.8rem 1.5rem; position:relative;
+  box-shadow:0 1px 0 rgba(70,49,28,.1), 0 18px 50px -22px rgba(46,31,14,.35);
+}
+.card::before{content:""; position:absolute; inset:5px; border:1px solid rgba(70,49,28,.16); pointer-events:none}
+.card .kicker{margin-bottom:.7rem}
+.card h2{
+  font-family:var(--display); font-weight:540; font-variation-settings:"SOFT" 45,"WONK" 1;
+  font-size:1.72rem; line-height:1.14; margin-bottom:.9rem; letter-spacing:.005em;
+}
+.card p{margin-bottom:.85rem; color:#2B1D0D}
+.card p:last-of-type{margin-bottom:0}
+.card > p:first-of-type::first-letter{
+  font-family:var(--display); font-weight:600; font-size:3.1em; float:left;
+  line-height:.82; padding:.04em .12em 0 0; color:var(--green-deep);
+}
+.note{
+  font-style:italic; font-size:.97rem; color:#584428; margin-top:1.1rem; padding-top:.9rem;
+  border-top:1px solid rgba(70,49,28,.22);
+}
+.note::before{content:"❧ "; font-style:normal; color:var(--gold-deep)}
+.note .graft{font-style:normal; font-variant-numeric:tabular-nums; color:var(--green-deep); font-weight:600; letter-spacing:.04em}
+
+.plate{margin:1.2rem 0 .2rem}
+.plate-label{
+  font-size:.68rem; letter-spacing:.26em; text-transform:uppercase; color:var(--sepia-soft);
+  display:block; margin-bottom:.5rem;
+}
+.plate .mat{background:var(--paper-hi); padding:10px; border:1px solid rgba(70,49,28,.45); box-shadow:0 10px 26px -14px rgba(46,31,14,.4)}
+.plate .mat img{filter:sepia(.14) contrast(1.02)}
+.plate figcaption{font-style:italic; font-size:.92rem; color:#584428; margin-top:.6rem; line-height:1.5}
+
+.btn{
+  font-family:var(--serif); font-size:.82rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink); background:var(--paper-hi); border:1px solid var(--sepia);
+  padding:.6em 1.25em; cursor:pointer; margin-top:1.1rem;
+  box-shadow:0 2px 0 rgba(70,49,28,.28);
+  transition:transform .3s var(--ease-pop), box-shadow .3s var(--ease-pop), background .3s var(--ease-settle);
+}
+.btn:hover{transform:translateY(-2px); box-shadow:0 4px 0 rgba(70,49,28,.28); background:#FFFDF4}
+.btn:active{transform:translateY(1px); box-shadow:0 0 0 rgba(70,49,28,.28)}
+.btn-hint{display:block; font-size:.85rem; font-style:italic; color:#584428; margin-top:.55rem}
+.windfalls{font-variant-numeric:tabular-nums}
+
+.tail{height:88vh}
+
+/* ---------- growth rail ---------- */
+.rail{
+  position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:30;
+  display:flex; flex-direction:column; gap:0; opacity:1;
+  transition:opacity .6s var(--ease-settle);
+}
+.rail.gone{opacity:0; pointer-events:none}
+.rail .line{position:absolute; left:5px; top:10px; bottom:10px; width:1px; background:rgba(70,49,28,.25)}
+.rail .fill{position:absolute; left:5px; top:10px; width:1px; height:0; background:var(--green); transition:height .25s var(--ease-settle)}
+.rail button{
+  position:relative; display:flex; align-items:center; gap:.7rem; background:none; border:0;
+  padding:.55rem 0; cursor:pointer; color:var(--sepia-soft); z-index:1;
+}
+.rail .dot{
+  width:11px;height:11px;border-radius:50%; border:1px solid var(--sepia-soft);
+  background:var(--paper); transition:background .35s var(--ease-pop), border-color .35s, transform .35s var(--ease-pop);
+  flex:none;
+}
+.rail .lbl{
+  font-size:.62rem; letter-spacing:.22em; text-transform:uppercase; font-weight:600;
+  opacity:.65; transition:opacity .3s, color .3s;
+}
+.rail button:hover .dot{border-color:var(--green)}
+.rail button.on .dot{background:var(--green); border-color:var(--green-deep); transform:scale(1.25)}
+.rail button.on .lbl{opacity:1; color:var(--green-deep)}
+
+/* ---------- plate II / dusk ---------- */
+.dusk-wrap{position:relative; z-index:2; background:linear-gradient(to bottom, var(--paper) 0, #E8D3A8 6%, #6B4A20 16%, var(--dusk) 34%, var(--dusk) 100%)}
+.plate2{
+  padding:11rem 1.4rem 7rem; color:var(--dusk-cream); text-align:center;
+}
+.plate2 .kicker{color:#D8AE54}
+.plate2 h2{
+  font-family:var(--display); font-weight:480; font-style:italic; font-variation-settings:"SOFT" 60,"WONK" 0;
+  font-size:clamp(1.9rem,4vw,3rem); margin-bottom:2.6rem; color:#F3E5C0;
+}
+.plate2 figure{max-width:56rem; margin:0 auto}
+.plate2 .mat{background:#F6ECD2; padding:clamp(10px,1.6vw,18px); border:1px solid #0D0803; box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.plate2 figcaption{font-style:italic; color:#CDB88B; margin-top:1.1rem; font-size:1rem}
+.plate2 .after{max-width:46ch; margin:3.4rem auto 0; font-size:1.08rem; color:#DECBA0; line-height:1.7}
+.plate2 .after a{color:#F0C75E; text-decoration:underline; text-decoration-color:rgba(240,199,94,.45); text-underline-offset:3px; transition:text-decoration-color .3s}
+.plate2 .after a:hover{text-decoration-color:#F0C75E}
+.plate2 .after a:focus-visible{outline-color:#F0C75E}
+
+/* ---------- footer ---------- */
+.site-foot{
+  background:var(--dusk); color:var(--dusk-cream); padding:3.5rem 1.4rem 4rem;
+  border-top:1px solid rgba(240,199,94,.2);
+}
+.foot-grid{max-width:70rem; margin:0 auto; display:grid; grid-template-columns:1.3fr 1fr 1.3fr; gap:2.5rem}
+.foot-grid h3{
+  font-size:.72rem; letter-spacing:.26em; text-transform:uppercase; color:#B99755;
+  margin-bottom:.9rem; font-weight:600;
+}
+.foot-brand{display:flex; gap:1rem; align-items:flex-start}
+.foot-brand img{width:54px;height:auto}
+.foot-brand p{font-size:.98rem; color:#D5C094; line-height:1.55}
+.foot-brand strong{font-family:var(--display); letter-spacing:.1em; font-weight:600; color:#F3E5C0; display:block; margin-bottom:.2rem}
+.site-foot ul{list-style:none}
+.site-foot li{margin-bottom:.35rem}
+.site-foot a{color:#E4CE9D; text-decoration:none; border-bottom:1px solid rgba(228,206,157,.25); transition:color .3s, border-color .3s}
+.site-foot a:hover{color:#F0C75E; border-color:#F0C75E}
+.site-foot a[aria-current="page"]{color:#F0C75E; border-color:#F0C75E}
+.site-foot a:focus-visible{outline-color:#F0C75E}
+.colophon{font-size:.94rem; color:#C0A876; line-height:1.65}
+.colophon .graft{color:#F0C75E; font-weight:600; letter-spacing:.04em; font-variant-numeric:tabular-nums}
+.colophon button{
+  font:inherit; font-size:.94rem; color:#F0C75E; background:none; border:0; padding:0; cursor:pointer;
+  text-decoration:underline; text-decoration-color:rgba(240,199,94,.45); text-underline-offset:3px;
+  transition:text-decoration-color .3s;
+}
+.colophon button:hover{text-decoration-color:#F0C75E}
+.colophon button:focus-visible{outline-color:#F0C75E}
+.colophon .sep{color:#7A6238; padding:0 .35em}
+
+noscript div{max-width:38rem; margin:8rem auto; padding:2rem; border:1px solid var(--sepia); font-style:italic; text-align:center}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .foot-grid{grid-template-columns:1fr; gap:2.2rem}
+  .rail .lbl{display:none}
+  .rail{left:9px}
+}
+@media (max-width:640px){
+  body{font-size:1.03rem}
+  .site-head{padding:.9rem 1rem .7rem}
+  .site-head nav{justify-content:center; text-align:center}
+  .site-head ul{gap:.1rem 1rem; justify-content:center}
+  .site-head a{font-size:.7rem; letter-spacing:.13em}
+  .chapter{padding:0 1.1rem; min-height:128vh; justify-content:center !important}
+  .card{max-width:100%; padding:1.4rem 1.3rem 1.2rem}
+  .card h2{font-size:1.5rem}
+  .hero{padding-bottom:9rem}
+  .hero h1{font-size:2.35rem}
+  .hero .lede{font-size:1.05rem}
+  .hero-note{margin-top:1.6rem}
+  .cue{bottom:1.1rem}
+  .plate2{padding:8rem 1rem 5rem}
+  .tail{height:70vh}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#story">Skip to the story</a>
+
+<header class="site-head">
+  <nav aria-label="Tipsy Bee Farms sites">
+    <span class="wordmark">Tipsy <span class="bee">Bee</span> Farms</span>
+    <ul>
+      <li><a href="../hive/">Hive</a></li>
+      <li><a href="../orchard/" aria-current="page">Orchard</a></li>
+      <li><a href="../lineage/">Lineage</a></li>
+      <li><a href="../cellar/">Cellar</a></li>
+      <li><a href="../arcade/">Arcade</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section class="tree-scroll" id="grove" aria-label="A Comice pear tree that grows as you scroll">
+    <div class="stage">
+      <canvas id="tree" role="img" aria-label="A Comice pear tree drawn in sepia ink, growing as the page scrolls: first a seed, then a single whip, then scaffold branches, white blossom clusters, hanging pears, and finally golden-hour light across the Rogue Valley."></canvas>
+    </div>
+
+    <div class="overlays">
+      <article class="chapter hero">
+        <span class="kicker">Tipsy Bee Farms · Rogue Valley, Oregon</span>
+        <h1>Everything here descends from a pear tree.</h1>
+        <p class="lede">Keep scrolling, and a Comice pear tree will draw itself the way ours grew — <em>slowly, crookedly, on purpose.</em> It is seeded like anything worth keeping: reload, and a different tree grows. Always a pear. Never the same one.</p>
+        <p class="hero-note"><i>Pyrus communis</i> ‘Doyenné du Comice’ — raised 1849 in the garden of the Comice Horticole, Angers, France. The buttery one.</p>
+        <div class="cue" aria-hidden="true">
+          <span>Scroll to grow</span>
+          <svg viewBox="0 0 14 22" fill="none"><path d="M7 1v18M2 14l5 6 5-6" stroke="#6B5233" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </article>
+
+      <article class="chapter left" id="story" aria-labelledby="h-whip">
+        <div class="card">
+          <span class="kicker">I · Year one — the whip</span>
+          <h2 id="h-whip">You don’t plant a pear. You graft one.</h2>
+          <p>A pear seed is a gambler. Plant one and you get a wild stranger — thorny, sour, nothing like its mother. So every true Comice on earth is a graft: a cutting of a cutting of a cutting, one unbroken line of wood going back to a single tree in Angers, France, 1849. Our great-grandfather set his whips in Rogue Valley dirt a hundred years ago, give or take a war, and joined the lineage.</p>
+          <p>A <em>whip</em> is nursery talk for a first-year tree — one unbranched stem, all ambition and no shade. Every orchard begins as a field of held breath.</p>
+          <p class="note">This tree is Graft № <span class="graft">····</span>. Reload and the number changes; the pear does not. That is roughly how family works.</p>
+        </div>
+      </article>
+
+      <article class="chapter right" aria-labelledby="h-scaffold">
+        <div class="card">
+          <span class="kicker">II · Years two to five — the scaffold</span>
+          <h2 id="h-scaffold">The shape you cut in winter is the crop you pick in fall.</h2>
+          <p>The first limbs are called <em>scaffolds</em>, and they carry everything that comes after — fruit, ladders, children. Grandpa’s law was three or four scaffolds, wide angles, nothing crossing, and no limb you couldn’t trust a kid on. By the 1930s the family rows ran toward the bald hill east of Medford, and at harvest the Comice came off in wagonloads.</p>
+          <figure class="plate">
+            <span class="plate-label">Plate I — the harvest, c. 1930</span>
+            <div class="mat">
+              <img src="../assets/photos/pear-mountain.jpg" width="731" height="533" loading="lazy" decoding="async"
+                   alt="Sepia photograph from around 1930: the great-grandfather sits half-buried in an enormous mountain of harvested pears, orchard flats and a bald hill behind him.">
+            </div>
+            <figcaption>The great-grandfather, sitting in that year’s harvest. He grew every pear in this photograph. The hill behind him grew nothing at all.</figcaption>
+          </figure>
+          <p class="note">The Rogue Valley is one of the earth’s great pear places — deep bench soils, furnace summers, cold nights sliding off the Cascades. Medford shipped Comice east in iced railcars, and it is still the pear this valley mails across America every December.</p>
+        </div>
+      </article>
+
+      <article class="chapter left" aria-labelledby="h-bloom">
+        <div class="card">
+          <span class="kicker">III · Early April — bloom</span>
+          <h2 id="h-bloom">No bees, no pears. Which is how a pear farm ends up named for a bee.</h2>
+          <p>A pear blossom refuses its own pollen. Botanists say <em>self-incompatible</em>; we say it needs the neighbors. Every April the orchard held its breath — five white petals to a flower, five to seven flowers to a cluster — waiting on somebody with six legs to make the introductions.</p>
+          <p>The family secret: bees are lukewarm about pear nectar. It runs thin — low sugar, faint perfume — and a hive with options will drift to the mustard bloom instead. So an orchardist keeps his hives close and his rows tempting. Great-grandfather kept the pears. We keep the bees. Same handshake, other hand.</p>
+          <p class="note">A pear flower’s nectar is roughly half as sweet as an apple’s — one more reason to be patient with bees, and to keep your own.</p>
+        </div>
+      </article>
+
+      <article class="chapter right" aria-labelledby="h-fruit">
+        <div class="card">
+          <span class="kicker">IV · Late September — harvest</span>
+          <h2 id="h-fruit">A pear ripens in the dark, off the tree.</h2>
+          <p>Comice is the buttery one — the pear that made fruit-of-the-month famous, so tender the packing houses wrap each one in tissue like it might bruise from a hard look. But here is the trick nobody tells you: leave a pear to ripen on the branch and it ripens from the inside out, mealy at the core before the skin admits a thing. You pick it hard. You lay it somewhere cool and dark. You wait.</p>
+          <p>When the flesh beside the stem gives to a gentle thumb, cancel your plans and eat it over the sink.</p>
+          <p class="note">Check the neck, never the belly. Press lightly by the stem: if it yields, it’s ready. If you waited for the belly to soften, you’re two days late — and it knows.</p>
+        </div>
+      </article>
+
+      <article class="chapter left" aria-labelledby="h-gold">
+        <div class="card">
+          <span class="kicker">V · Present day — one tree left</span>
+          <h2 id="h-gold">The orchard is smaller now. One tree, kept like a promise.</h2>
+          <p>The rows came out over the decades — the valley grew houses better than pears, in the end — and the family went chasing other pollinations: a Navy commission, model airplanes, a human-powered helicopter pedaled inside a Boeing hangar in 1994. But one Comice still stands at the fence line, and every September it leans a little lower with fruit.</p>
+          <p>The honey, the mead, the pickles — all of it descends, one way or another, from this tree. We named the farm for a bee. The bee, if you ask her, worked for a pear.</p>
+          <button class="btn" id="shake" type="button">Shake the tree</button>
+          <span class="btn-hint">A few will fall. They’re windfalls; they’re yours. <span class="windfalls" aria-live="polite">Windfalls: <span id="windfall-count">0</span></span></span>
+          <p class="note"><em>Windfall</em>, n. — fruit the wind picks for you. The origin of our pickled-pear habit, and most of our better decisions.</p>
+        </div>
+      </article>
+
+      <div class="tail" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <div class="dusk-wrap">
+    <section class="plate2" aria-labelledby="h-plate2">
+      <span class="kicker">Plate II — the fence line, September</span>
+      <h2 id="h-plate2">The last pear tree, golden hour.</h2>
+      <figure>
+        <div class="mat">
+          <img src="../assets/photos/last-pear-tree.jpg" width="1043" height="736" loading="lazy" decoding="async"
+               alt="The family’s last Comice pear tree at golden hour: dark leaves and hanging pears in the foreground, the sun flaring low over dry September grass in the Rogue Valley.">
+        </div>
+        <figcaption>Still setting fruit. Still refusing its own pollen. Still, somehow, the whole farm in one tree.</figcaption>
+      </figure>
+      <p class="after">The bees it fed live at the <a href="../hive/">Hive</a>. The people who picked it are in the <a href="../lineage/">Lineage</a>. What the kitchen does with windfalls is in the <a href="../cellar/">Cellar</a> — and the flying machine, well. That’s the <a href="../arcade/">Arcade</a>.</p>
+    </section>
+
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <img src="../assets/brand/logo.png" alt="Tipsy Bee Farms badge: a hexagon with a cartoon bee and the word TIPSY." width="54" height="62">
+          <p><strong>Tipsy Bee Farms</strong>Medford, Oregon — the Rogue Valley. Honey, mead &amp; pickles from a family that names its machines.</p>
+        </div>
+        <nav aria-label="Tipsy Bee Farms sites (footer)">
+          <h3>The farm, five ways</h3>
+          <ul>
+            <li><a href="../hive/">The Hive</a></li>
+            <li><a href="../orchard/" aria-current="page">The Orchard — you are here</a></li>
+            <li><a href="../lineage/">The Lineage</a></li>
+            <li><a href="../cellar/">The Cellar</a></li>
+            <li><a href="../arcade/">The Arcade</a></li>
+          </ul>
+        </nav>
+        <div class="colophon">
+          <h3>Colophon</h3>
+          <p>This visit grew Graft № <span class="graft">····</span><span class="sep">·</span><button type="button" id="regrow">Regrow the tree</button></p>
+          <p>Drawn live in your browser by a seeded stochastic L-system — eight rewriting passes, branch angles jittered ±11°, no two visits alike. Ours took a hundred years.</p>
+          <p>Set in Fraunces &amp; EB Garamond.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</main>
+
+<nav class="rail" id="rail" aria-label="Growth stages">
+  <span class="line" aria-hidden="true"></span><span class="fill" id="rail-fill" aria-hidden="true"></span>
+  <button type="button" data-p="0"><span class="dot" aria-hidden="true"></span><span class="lbl">Seed</span></button>
+  <button type="button" data-p="0.155"><span class="dot" aria-hidden="true"></span><span class="lbl">Whip</span></button>
+  <button type="button" data-p="0.33"><span class="dot" aria-hidden="true"></span><span class="lbl">Scaffold</span></button>
+  <button type="button" data-p="0.51"><span class="dot" aria-hidden="true"></span><span class="lbl">Bloom</span></button>
+  <button type="button" data-p="0.68"><span class="dot" aria-hidden="true"></span><span class="lbl">Fruit</span></button>
+  <button type="button" data-p="0.88"><span class="dot" aria-hidden="true"></span><span class="lbl">Gold hour</span></button>
+</nav>
+
+<noscript><div>The tree needs JavaScript to grow — but the story above still reads top to bottom, and the last tree is still standing at the fence line.</div></noscript>
+
+<script src="orchard.js" defer></script>
+</body>
+</html>

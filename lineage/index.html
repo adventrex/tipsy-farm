@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>An Unauthorized Biography — Tipsy Bee Farms</title>
+<meta name="description" content="Four generations of one Rogue Valley family — pears, gliders, one human-powered helicopter, and the bees that got the naming rights. Transferred from VHS.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0908'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23FF4B3A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0908;
+    --black2:#14110B;
+    --white:#F2ECDF;
+    --white-dim:#CFC7B4;
+    --amber:#FFB03A;
+    --amber-dim:#C9A45E;
+    --burn:#FF8A45;
+    --rec:#FF4B3A;
+    --vel:0;               /* scroll velocity 0..1, set by JS */
+    --abpx:0px;            /* chromatic aberration offset, set by JS */
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --ease-tape:cubic-bezier(.7,0,.2,1);
+    --mono:'Share Tech Mono',ui-monospace,monospace;
+    --cond:'Barlow Condensed',Impact,sans-serif;
+    --serif:'Newsreader',Georgia,serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:auto}
+  html,body{overflow-x:clip}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:var(--serif);
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--amber);color:var(--black)}
+  a{color:var(--amber)}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:1px}
+
+  .skip{
+    position:fixed;top:-60px;left:16px;z-index:200;
+    background:var(--black);color:var(--amber);
+    font-family:var(--mono);font-size:.8rem;letter-spacing:.1em;
+    padding:.7em 1.1em;border:1px solid var(--amber);
+    transition:top .3s var(--ease-out);
+  }
+  .skip:focus{top:14px}
+
+  /* ============ THE TAPE (main content wrapper — receives wobble) ============ */
+  main{position:relative;z-index:1;overflow-x:clip}
+
+  /* ============ HUD ============ */
+  .hud{position:fixed;inset:0;z-index:70;pointer-events:none;
+    font-family:var(--mono);font-size:clamp(.68rem,1.5vw,.82rem);
+    letter-spacing:.12em;color:var(--white);
+    text-shadow:0 0 8px rgba(255,176,58,.35),0 0 2px rgba(0,0,0,.8);
+  }
+  .hud>div{position:absolute}
+  .hud-tl{top:calc(14px + env(safe-area-inset-top,0px));left:18px;display:flex;gap:1em;align-items:center}
+  .hud-tr{top:calc(14px + env(safe-area-inset-top,0px));right:18px}
+  .hud-bl{bottom:16px;left:18px;color:var(--amber)}
+  .hud-br{bottom:16px;right:18px;color:var(--burn);text-shadow:0 0 10px rgba(255,138,69,.55),0 0 2px rgba(0,0,0,.8)}
+  .rec-dot{color:var(--rec);animation:blink 1.3s steps(1) infinite;text-shadow:0 0 9px rgba(255,75,58,.8)}
+  @keyframes blink{0%,62%{opacity:1}63%,100%{opacity:.12}}
+  .hud-bl.flick,.hud-br.flick{animation:flick .34s steps(2)}
+  @keyframes flick{0%{opacity:0}40%{opacity:1}60%{opacity:.2}100%{opacity:1}}
+  .trk{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+    color:var(--white);opacity:0;letter-spacing:.3em}
+  .trk.on{opacity:1;animation:blink .5s steps(1) infinite}
+  @media (max-width:560px){
+    .hud-bl{display:none}
+    .hud{font-size:.62rem}
+  }
+
+  /* letterbox scrims — keep HUD legible over anything */
+  .ov-lb::before,.ov-lb::after{content:"";position:fixed;left:0;right:0;z-index:65;pointer-events:none}
+  .ov-lb::before{top:0;height:110px;background:linear-gradient(180deg,rgba(6,5,4,.92) 0%,rgba(6,5,4,.55) 45%,transparent 100%)}
+  .ov-lb::after{bottom:0;height:88px;background:linear-gradient(0deg,rgba(6,5,4,.92) 0%,rgba(6,5,4,.5) 50%,transparent 100%)}
+
+  .hud-ix,.hud-ps{
+    position:fixed;top:calc(40px + env(safe-area-inset-top,0px));right:18px;z-index:72;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;
+    color:var(--amber);background:rgba(10,9,8,.85);
+    border:1px solid rgba(255,176,58,.55);padding:.5em .9em .45em;
+    cursor:pointer;
+    transition:background .25s var(--ease-out),color .25s var(--ease-out);
+  }
+  .hud-ix:hover{background:var(--amber);color:var(--black)}
+  .hud-ps{top:calc(76px + env(safe-area-inset-top,0px))}
+  .hud-ps:hover{background:var(--amber);color:var(--black)}
+  .hud-ps[aria-pressed="true"]{background:var(--amber);color:var(--black)}
+
+  /* ============ PAUSE (freeze-frame) ============ */
+  .pause-osd{position:fixed;inset:0;z-index:75;pointer-events:none;display:none;
+    align-items:center;justify-content:center;flex-direction:column}
+  html.paused .pause-osd{display:flex}
+  .pause-plate{background:rgba(6,5,4,.78);padding:1.6rem 2.6rem 1.5rem;text-align:center;
+    box-shadow:0 0 60px 30px rgba(6,5,4,.35)}
+  .pause-osd .p-big{font-family:var(--mono);font-size:clamp(1.6rem,5vw,2.6rem);
+    letter-spacing:.35em;color:var(--white);
+    text-shadow:0 0 20px rgba(242,236,223,.4),3px 0 0 rgba(255,70,50,.5),-3px 0 0 rgba(80,215,255,.45)}
+  .pause-osd .p-sub{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;color:var(--amber);
+    margin-top:1.1rem;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+  .pause-strip{position:fixed;left:-3vw;right:-3vw;height:26px;z-index:74;pointer-events:none;display:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 2px,rgba(0,0,0,.4) 2px 4px);
+    filter:blur(.5px);mix-blend-mode:screen}
+  html.paused .pause-strip{display:block}
+  .pause-strip.s1{top:22vh;animation:pjit .34s steps(3) infinite}
+  .pause-strip.s2{top:64vh;animation:pjit .27s steps(2) infinite reverse}
+  @keyframes pjit{0%{transform:translateX(0) skewX(-4deg)}50%{transform:translateX(9px) skewX(3deg)}100%{transform:translateX(-7px) skewX(-2deg)}}
+  html.paused main{animation:framejit .5s steps(2) infinite}
+  @keyframes framejit{0%{transform:translateY(0)}50%{transform:translateY(1.5px)}100%{transform:translateY(0)}}
+  html.paused .rec-dot{animation:none;opacity:.25}
+  html.paused .ov-noise{opacity:.13}
+
+  /* ============ REWIND ============ */
+  .rew-osd{position:fixed;top:18vh;left:50%;transform:translateX(-50%);z-index:76;
+    pointer-events:none;display:none;font-family:var(--mono);
+    font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.3em;color:var(--white);
+    text-shadow:0 0 18px rgba(242,236,223,.4),3px 0 0 rgba(255,70,50,.5),-3px 0 0 rgba(80,215,255,.45)}
+  html.rewinding .rew-osd{display:block;animation:blink .4s steps(1) infinite}
+  .rew-osd.play-flash{display:block;animation:none}
+  html.rewinding .ov-noise{opacity:.16}
+  .rew-btn{display:inline-block;margin:4.5rem auto 0;font-family:var(--mono);
+    font-size:.78rem;letter-spacing:.28em;color:var(--amber);
+    background:none;border:1px solid rgba(255,176,58,.55);padding:1em 2.2em .95em;
+    cursor:pointer;transition:background .3s var(--ease-out),color .3s var(--ease-out),transform .3s var(--ease-out)}
+  .rew-btn:hover{background:var(--amber);color:var(--black);transform:translateY(-2px)}
+  .rew-hint{font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;
+    color:rgba(201,164,94,.6);margin-top:1rem}
+
+  /* ============ OSD INDEX MENU ============ */
+  .osd{position:fixed;inset:0;z-index:90;background:rgba(6,5,4,.94);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);
+  }
+  .osd[hidden]{display:none}
+  .osd-box{width:min(92vw,560px);padding:2rem 0}
+  .osd-h{color:var(--white);letter-spacing:.5em;font-size:.85rem;text-align:center;margin-bottom:2.2rem}
+  .osd-h::before,.osd-h::after{content:"——";color:var(--amber-dim);margin:0 1em;letter-spacing:0}
+  .osd-list{list-style:none}
+  .osd-list a{
+    display:flex;align-items:baseline;gap:1em;
+    padding:.85em .8em;color:var(--white);text-decoration:none;
+    font-size:clamp(.8rem,2.4vw,.95rem);letter-spacing:.1em;
+    border:1px solid transparent;
+    transition:border-color .2s var(--ease-out),background .2s var(--ease-out);
+  }
+  .osd-list a::before{content:"▸";color:transparent;transition:color .15s}
+  .osd-list a:hover,.osd-list a:focus-visible{border-color:rgba(255,176,58,.5);background:rgba(255,176,58,.06)}
+  .osd-list a:hover::before,.osd-list a:focus-visible::before{color:var(--amber)}
+  .osd-list .n{color:var(--amber-dim)}
+  .osd-list b{font-weight:400;color:var(--amber)}
+  .osd-list .dots{flex:1;overflow:hidden;white-space:nowrap;color:rgba(201,164,94,.35);font-size:.8em}
+  .osd-list .d{color:var(--white-dim);font-size:.78em;letter-spacing:.06em;white-space:nowrap}
+  .osd-list a[aria-current="page"] b{color:var(--white)}
+  .osd-list a[aria-current="page"] .d{color:var(--rec)}
+  .osd-close{display:block;margin:2.4rem auto 0;font-family:var(--mono);
+    font-size:.7rem;letter-spacing:.25em;color:var(--white-dim);
+    background:none;border:1px solid rgba(242,236,223,.35);padding:.7em 1.6em;cursor:pointer;
+    transition:color .2s,border-color .2s}
+  .osd-close:hover{color:var(--amber);border-color:var(--amber)}
+  @media (max-width:560px){ .osd-list .d{display:none} }
+
+  /* ============ OVERLAYS: scanlines, noise, vignette, tracking band ============ */
+  .ov-scan{position:fixed;inset:0;z-index:60;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.55) 0 1px,transparent 1px 3px);
+    opacity:calc(.10 + var(--vel)*.10);
+  }
+  .ov-noise{position:fixed;inset:-40px;z-index:60;pointer-events:none;
+    background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="240" height="240"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3C/filter%3E%3Crect width="240" height="240" filter="url(%23n)" opacity="0.5"/%3E%3C/svg%3E');
+    opacity:calc(.05 + var(--vel)*.06);
+    animation:noisejit .6s steps(6) infinite;
+  }
+  @keyframes noisejit{
+    0%{transform:translate(0,0)}17%{transform:translate(-14px,8px)}
+    34%{transform:translate(9px,-16px)}51%{transform:translate(-7px,-9px)}
+    68%{transform:translate(15px,11px)}85%{transform:translate(-11px,4px)}
+    100%{transform:translate(0,0)}
+  }
+  .ov-vig{position:fixed;inset:0;z-index:61;pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.5) 118%)}
+  .band{position:fixed;left:-4vw;right:-4vw;bottom:11vh;height:52px;z-index:62;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.10) 2px 3px),
+      linear-gradient(0deg,rgba(255,255,255,.02),rgba(255,255,255,.14) 60%,rgba(255,255,255,.03));
+    filter:blur(.6px);
+    transform:translateY(calc(var(--vel)*-14px)) skewX(calc(var(--vel)*-7deg));
+    opacity:calc((var(--vel) - .42)*1.5);
+    mix-blend-mode:screen;
+  }
+
+  /* ============ COLD OPEN ============ */
+  .co{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:5rem clamp(1.25rem,5vw,3rem) 4rem;position:relative}
+  .co-kick{font-family:var(--mono);font-size:clamp(.65rem,1.8vw,.8rem);
+    letter-spacing:.42em;color:var(--amber);margin-bottom:2.6rem}
+  @media (max-width:560px){
+    .co-kick{letter-spacing:.24em;font-size:.62rem;line-height:2.1}
+  }
+  .co-title{font-family:var(--cond);font-weight:700;text-transform:uppercase;
+    font-size:clamp(3.1rem,11.5vw,8.6rem);line-height:.92;letter-spacing:.015em;
+    color:var(--white);
+    text-shadow:
+      calc((var(--abpx) + .4px)*1.4) 0 0 rgba(255,70,50,.5),
+      calc((var(--abpx) + .4px)*-1.4) 0 0 rgba(80,215,255,.45),
+      0 0 24px rgba(255,176,58,.14);
+  }
+  .co-rule{width:min(46vw,300px);height:3px;background:var(--amber);margin:2.4rem 0;
+    box-shadow:0 0 12px rgba(255,176,58,.5)}
+  .co-deck{max-width:34em;font-size:clamp(1rem,2.4vw,1.22rem);line-height:1.75;
+    color:var(--white-dim);font-style:italic}
+  .co-deck em{color:var(--amber);font-style:italic}
+  .co-osd{position:absolute;bottom:8vh;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.3em;color:var(--amber-dim);
+    animation:blink 2.4s steps(1) infinite;white-space:nowrap}
+
+  /* ============ CHAPTER SLATES ============ */
+  .slate{min-height:64vh;min-height:64svh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:4.5rem clamp(1.25rem,5vw,3rem) 3.5rem}
+  .sl-num{font-family:var(--cond);font-weight:700;line-height:.8;
+    font-size:clamp(8rem,23vw,15.5rem);color:transparent;
+    -webkit-text-stroke:2px var(--amber);opacity:.85}
+  .sl-title{font-family:var(--cond);font-weight:600;text-transform:uppercase;
+    font-size:clamp(1.7rem,4.6vw,3.1rem);letter-spacing:.05em;color:var(--white);
+    margin-top:1.4rem}
+  .sl-sub{font-family:var(--mono);font-size:clamp(.66rem,1.7vw,.78rem);
+    letter-spacing:.28em;color:var(--amber-dim);margin-top:1.1rem}
+
+  /* ============ NARRATION ============ */
+  .nar{max-width:41rem;margin:0 auto;padding:0 clamp(1.25rem,5vw,2rem)}
+  .nar p{font-size:clamp(1.08rem,2.5vw,1.22rem);line-height:1.85;color:var(--white);
+    margin:1.6em 0}
+  .nar p em{color:var(--amber);font-style:italic}
+  .nar .lede::first-letter{
+    font-family:var(--cond);font-weight:700;color:var(--amber);
+    float:left;font-size:3.6em;line-height:.78;padding:.06em .12em 0 0}
+  .aside-line{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;
+    color:var(--amber-dim);margin:2.6em 0;text-align:center}
+
+  /* ============ FIGURES / PRINTS ============ */
+  .ph{width:min(calc(100% - 2.5rem),var(--nat));margin:4.5rem auto;position:relative}
+  .print{position:relative;overflow:hidden;background:var(--black2);
+    box-shadow:0 22px 60px -18px rgba(0,0,0,.85),0 0 0 1px rgba(255,176,58,.07)}
+  .pm{position:relative;display:block}
+  .pm img{display:block;width:100%;height:auto}
+  .pm .ab{position:absolute;inset:0;width:100%;height:auto;display:none;
+    opacity:calc(var(--vel)*var(--vel)*.55);pointer-events:none}
+  .ph.live .pm .ab{display:block}
+  .pm .abr{mix-blend-mode:screen;filter:brightness(.85) sepia(1) saturate(6) hue-rotate(-48deg);
+    transform:translateX(var(--abpx))}
+  .pm .abc{mix-blend-mode:screen;filter:brightness(.8) sepia(1) saturate(5) hue-rotate(148deg);
+    transform:translateX(calc(var(--abpx)*-1))}
+
+  /* chyron lower-third */
+  .l3{position:absolute;left:0;bottom:clamp(.9rem,3.5%,1.6rem);max-width:88%;
+    display:flex;align-items:stretch;
+    opacity:0;transform:translateX(-22px);
+    transition:opacity .7s var(--ease-out) .3s,transform .7s var(--ease-out) .3s}
+  .rv.on .l3{opacity:1;transform:translateX(0)}
+  .l3-bar{width:4px;background:var(--amber);box-shadow:0 0 10px rgba(255,176,58,.6)}
+  .l3-t{background:linear-gradient(90deg,rgba(8,7,6,.88) 0%,rgba(8,7,6,.72) 60%,rgba(8,7,6,0) 100%);
+    padding:.55em 2.2em .55em .9em}
+  .l3-t b{display:block;font-family:var(--cond);font-weight:600;text-transform:uppercase;
+    font-size:clamp(.98rem,2.6vw,1.38rem);letter-spacing:.05em;color:var(--white);
+    text-shadow:0 1px 3px rgba(0,0,0,.9)}
+  .l3-t i{display:block;font-style:normal;font-family:var(--mono);
+    font-size:clamp(.55rem,1.6vw,.68rem);letter-spacing:.2em;color:var(--amber);
+    margin-top:.35em;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
+  @media (max-width:640px){
+    .l3-x{display:none}
+    .l3-t i{letter-spacing:.13em}
+  }
+
+  /* handwritten tape-label marginalia (desktop only) */
+  .marg{display:none;position:absolute;width:180px;
+    font-family:'Caveat',cursive;font-weight:600;font-size:1.35rem;line-height:1.25;
+    color:#D8B36A;pointer-events:none}
+  .marg::before{content:"";position:absolute;inset:-10px -14px;z-index:-1;
+    background:rgba(251,231,161,.045);transform:rotate(1.5deg)}
+  @media (min-width:1180px){
+    .ph .marg{display:block;top:24%;left:calc(100% + 34px);transform:rotate(-2.4deg)}
+    .ph .marg.mleft{left:auto;right:calc(100% + 34px);text-align:right;transform:rotate(2deg)}
+    .ph.stage .marg{top:16%;left:calc(50% + (var(--nat)/2) + 40px)}
+    .ph.stage .marg.mleft{left:auto;right:calc(50% + (var(--nat)/2) + 40px)}
+  }
+
+  /* tape label captions */
+  .tl{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;
+    color:var(--amber-dim);margin-top:1rem;text-align:center;line-height:1.7}
+
+  /* stage (letterboxed) figures */
+  .stage{width:100%;max-width:none;position:relative;padding:clamp(2.5rem,7vh,5rem) 0;margin:5rem 0}
+  .stage-bg{position:absolute;inset:0;background-size:cover;background-position:center;
+    filter:blur(52px) brightness(.28) saturate(1.25);transform:scale(1.25)}
+  .stage .print{position:relative;width:min(92vw,var(--nat));margin:0 auto}
+  .stage .tl{position:relative}
+
+  /* ============ REVEAL ============ */
+  .rv{opacity:0;transform:translateY(16px);
+    transition:opacity .95s var(--ease-out),transform .95s var(--ease-out)}
+  .rv.on{opacity:1;transform:none}
+
+  /* ============ CLOSER ============ */
+  .closer{text-align:center;padding:9rem 1.5rem 7rem}
+  .closer p{font-family:var(--serif);font-style:italic;font-weight:500;
+    font-size:clamp(1.5rem,4.2vw,2.3rem);color:var(--amber);
+    text-shadow:0 0 26px rgba(255,176,58,.25)}
+
+  /* ============ CREDITS / END OF TAPE ============ */
+  .credits{padding:10vh clamp(1.25rem,5vw,3rem) 12vh;text-align:center}
+  .stop-osd{font-family:var(--mono);font-size:clamp(1.6rem,6vw,3rem);
+    letter-spacing:.3em;color:var(--white);
+    text-shadow:0 0 18px rgba(242,236,223,.3)}
+  .roll{margin:4.5rem auto 0;max-width:34rem;font-family:var(--mono);
+    font-size:clamp(.66rem,1.9vw,.8rem);letter-spacing:.14em;color:var(--white-dim);
+    text-align:left;line-height:2.3}
+  .roll div{display:flex;gap:1em;align-items:baseline}
+  .roll dt{color:var(--amber-dim);white-space:nowrap}
+  .roll .dots{flex:1;border-bottom:1px dotted rgba(201,164,94,.3);transform:translateY(-4px)}
+  .roll dd{text-align:right}
+
+  .shelf{margin:7rem auto 0;max-width:44rem;text-align:left}
+  .shelf-h{font-family:var(--mono);font-size:.75rem;letter-spacing:.4em;
+    color:var(--amber);text-align:center;margin-bottom:2.4rem}
+  .spine{display:flex;align-items:center;gap:1.1em;text-decoration:none;
+    background:var(--black2);border:1px solid rgba(255,176,58,.16);
+    border-left:6px solid var(--amber-dim);
+    padding:1em 1.2em;margin-bottom:.7rem;
+    transition:transform .45s var(--ease-out),border-color .45s var(--ease-out),background .45s var(--ease-out)}
+  .spine:hover,.spine:focus-visible{transform:translateX(10px);border-color:rgba(255,176,58,.55);background:#1A1509}
+  .spine .t-n{font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;color:var(--amber-dim);white-space:nowrap}
+  .spine b{font-family:var(--cond);font-weight:600;text-transform:uppercase;
+    font-size:1.25rem;letter-spacing:.09em;color:var(--white)}
+  .spine i{font-style:italic;font-family:var(--serif);font-size:.92rem;color:var(--white-dim);
+    margin-left:auto;text-align:right}
+  .spine[aria-current="page"]{border-left-color:var(--rec);background:#1C0F0A}
+  .spine[aria-current="page"] .t-n{color:var(--rec)}
+  .now{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--rec);
+    margin-left:auto;white-space:nowrap;animation:blink 1.3s steps(1) infinite}
+  .spine[aria-current="page"] i{display:none}
+  @media (max-width:560px){
+    .spine i{display:none}
+    .spine{gap:.8em}
+  }
+
+  .colophon{margin-top:7rem;font-family:var(--mono);font-size:.62rem;
+    letter-spacing:.24em;color:rgba(201,164,94,.55);line-height:2.2}
+
+  /* ============ REDUCED MOTION ============ */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important}
+    .rv{opacity:1;transform:none}
+    .l3{opacity:1;transform:none}
+    .pm .ab{display:none !important}
+    .band{display:none}
+    .rec-dot{animation:none}
+    .co-osd,.now{animation:none}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the story</a>
+
+<!-- ============ HUD (decorative broadcast furniture) ============ -->
+<div class="hud" aria-hidden="true">
+  <div class="hud-tl"><span class="rec-dot">●</span><span>REC</span><span>SP</span></div>
+  <div class="hud-tr">TC <span id="tc">00:00:00;00</span></div>
+  <div class="hud-bl" id="hud-ch">OPENING TITLES</div>
+  <div class="hud-br" id="hud-st">SP · T-60</div>
+  <div class="trk" id="trk">▚ TRACKING</div>
+</div>
+<button class="hud-ix" id="ixBtn" aria-haspopup="dialog" aria-expanded="false">INDEX ≡</button>
+<button class="hud-ps" id="psBtn" aria-pressed="false" title="Pause the tape (P)">⏸ PAUSE</button>
+
+<!-- pause freeze-frame OSD -->
+<div class="pause-osd" aria-hidden="true">
+  <div class="pause-plate">
+    <p class="p-big">⏸ PAUSE</p>
+    <p class="p-sub">PRESS P TO RESUME · TAPE WILL NOT WEAR</p>
+  </div>
+</div>
+<div class="pause-strip s1" aria-hidden="true"></div>
+<div class="pause-strip s2" aria-hidden="true"></div>
+<div class="rew-osd" id="rewOsd" aria-hidden="true">◀◀ REW</div>
+<div class="ov-lb" aria-hidden="true"></div>
+
+<!-- ============ OSD INDEX MENU ============ -->
+<div class="osd" id="osd" role="dialog" aria-modal="true" aria-label="Tape index — the five Tipsy Bee sites" hidden>
+  <nav class="osd-box" aria-label="Tipsy Bee sites">
+    <p class="osd-h">INDEX</p>
+    <ul class="osd-list">
+      <li><a href="../hive/"><span class="n">01</span><b>HIVE</b><span class="dots">···················</span><span class="d">the living swarm</span></a></li>
+      <li><a href="../orchard/"><span class="n">02</span><b>ORCHARD</b><span class="dots">···················</span><span class="d">a tree draws itself</span></a></li>
+      <li><a href="./" aria-current="page"><span class="n">03</span><b>LINEAGE</b><span class="dots">···················</span><span class="d">● NOW PLAYING</span></a></li>
+      <li><a href="../cellar/"><span class="n">04</span><b>CELLAR</b><span class="dots">···················</span><span class="d">the provisions, in print</span></a></li>
+      <li><a href="../arcade/"><span class="n">05</span><b>ARCADE</b><span class="dots">···················</span><span class="d">pedal the Tipsy Bee</span></a></li>
+    </ul>
+    <button class="osd-close" id="osdClose">CLOSE</button>
+  </nav>
+</div>
+
+<!-- ============ CRT OVERLAYS ============ -->
+<div class="ov-scan" aria-hidden="true"></div>
+<div class="ov-noise" aria-hidden="true"></div>
+<div class="ov-vig" aria-hidden="true"></div>
+<div class="band" aria-hidden="true"></div>
+
+<main id="main">
+
+  <!-- ============ COLD OPEN ============ -->
+  <section class="co chapter" data-ch="OPENING TITLES" data-stamp="SP · T-60" aria-label="Opening titles">
+    <p class="co-kick">TIPSY BEE FARMS · HOME MOVIE ARCHIVE · TAPE 1 OF 1</p>
+    <h1 class="co-title">An Unauthorized<br>Biography</h1>
+    <div class="co-rule" aria-hidden="true"></div>
+    <p class="co-deck">Four generations of Rogue Valley stubbornness — pears, gliders,
+      one <em>human-powered helicopter</em>, and the bees that ended up with the naming
+      rights. Transferred from VHS. Tracking not guaranteed.</p>
+    <p class="co-osd" aria-hidden="true">▼ SCROLL TO PLAY · P TO PAUSE</p>
+  </section>
+
+  <!-- ============ CH.01 ============ -->
+  <section class="chapter" id="ch1" data-ch="CH.01 · A MOUNTAIN MADE OF PEARS" data-stamp="c.1931" aria-labelledby="h-ch1">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">01</p>
+      <h2 class="sl-title" id="h-ch1">A Mountain Made of Pears</h2>
+      <p class="sl-sub">ROGUE VALLEY, OREGON · c. 1931 · 00:02:10 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:704px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/pear-mountain.jpg" alt="A man in a hat sits half-buried in an enormous mound of Comice pears covering a field, a bald hill rising behind him. Sepia photograph, about 1931." width="704" height="513" loading="eager">
+          <img class="ab abr" src="../assets/photos/pear-mountain.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/pear-mountain.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Great-Grandfather</b><i><span class="l3-x">COMICE HARVEST · </span>ROGUE VALLEY · c.1931</i></div>
+        </div>
+      </div>
+      <span class="marg" aria-hidden="true">rewound 47 times. the counter gave up.</span>
+      <figcaption class="tl">REEL 1 · “the crop, and him in it” · undated, c. 1931</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">Begin with the pears, because this family begins with pears.
+      The man sitting inside the harvest is the great-grandfather, and that is not a
+      gravel pile behind him — that is the bald hill, and the mountain he has chosen as
+      furniture is <em>Comice pears</em>: the most difficult, most delicate,
+      most expensive-to-ship pear on earth, which the Rogue Valley grew better than
+      anywhere else and which he grew by the literal ton.</p>
+      <p class="rv">Notice that he did not stand <em>next to</em> the pears. He sat down
+      in them, in a hat, and waited for the camera. Every generation of this family will
+      repeat this exact move with a different machine.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.02 ============ -->
+  <section class="chapter" id="ch2" data-ch="CH.02 · BOWS, THEN AIRPLANES" data-stamp="c.1925" aria-labelledby="h-ch2">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">02</p>
+      <h2 class="sl-title" id="h-ch2">Bows, Then Airplanes</h2>
+      <p class="sl-sub">MEDFORD, OREGON · c. 1925 – 1934 · 00:09:40 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:460px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/curtis-charles-boys.jpg" alt="Studio portrait of two young brothers in dark coats and enormous ribbon bows, standing side by side on patterned carpet, unsmiling. About 1925." width="508" height="810" loading="lazy">
+          <img class="ab abr" src="../assets/photos/curtis-charles-boys.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/curtis-charles-boys.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <figcaption class="tl">REEL 1 · Curtis &amp; Charles · the bows were not their idea</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">Curtis and his brother Charles, in velvet bows that were
+      somebody else’s idea. The photographer got one frame and no smiles. Family
+      consensus holds that Curtis is the one already redesigning the studio’s light
+      fixtures in his head. Family consensus cannot agree on which one is Curtis.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:855px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/curtis-model-planes.jpg" alt="Eight boys and a young man in a suit pose with handmade model gliders outside a workshop window. About 1934." width="855" height="515" loading="lazy">
+          <img class="ab abr" src="../assets/photos/curtis-model-planes.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/curtis-model-planes.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Model Airplane Club</b><i>MEDFORD · c.1934<span class="l3-x"> · A SEASON’S OUTPUT</span></i></div>
+        </div>
+      </div>
+      <figcaption class="tl">somebody wrote “the club” on the back, and nothing else</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">Ten years later the bows are gone and the airplanes have arrived.
+      The model airplane club: eight boys, one necktie, and a summer’s worth of balsa
+      and tissue held up like livestock at the county fair. These are not toys — you can
+      tell because nobody is playing. Curtis had found the two loves of his life within
+      a mile of each other: pear country, and the air above it.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.03 ============ -->
+  <section class="chapter" id="ch3" data-ch="CH.03 · THE NAVY, THEN HOME" data-stamp="1944" aria-labelledby="h-ch3">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">03</p>
+      <h2 class="sl-title" id="h-ch3">The Navy, Then Home</h2>
+      <p class="sl-sub">1944 – c. 1965 · 00:17:05 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:470px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/curtis-navy.jpg" alt="Formal portrait of Curtis as a young Navy officer in dress whites and a peaked cap, grinning broadly. 1944." width="520" height="738" loading="lazy">
+          <img class="ab abr" src="../assets/photos/curtis-navy.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/curtis-navy.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>Curtis</b><i>U.S. NAVY<span class="l3-x"> · DRESS WHITES</span> · 1944</i></div>
+        </div>
+      </div>
+      <span class="marg mleft" aria-hidden="true">Gram kept this one on the piano.</span>
+      <figcaption class="tl">the grin of a man who has been near real airplanes</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">The Navy took a valley kid who built airplanes out of balsa and
+      stationed him next to the real thing. He came back an officer, with the grin you
+      see here — the grin of a man who has witnessed <em>industrial quantities of
+      aviation</em> and now regards the entire world as a set of parts. The dress whites
+      went into a cedar chest. The grin never fully came off.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:809px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/medford-airport.jpg" alt="Three men laughing hard outside the Medford airport terminal; an Airlines sign points behind them. About 1965." width="809" height="513" loading="lazy">
+          <img class="ab abr" src="../assets/photos/medford-airport.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/medford-airport.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>Curtis &amp; Rosenthal</b><i>MEDFORD AIRPORT · c.1965<span class="l3-x"> · MID-STORY</span></i></div>
+        </div>
+      </div>
+      <figcaption class="tl">no one remembers the joke. everyone remembers Rosenthal told it</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">Home again. The Medford airport terminal, with Rosenthal, mid-story.
+      Aviation people locate each other in a small valley the way bees locate clover,
+      and when they do, they stand outside the terminal saying true things about lift
+      until somebody’s wife leans on the horn.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.04 ============ -->
+  <section class="chapter" id="ch4" data-ch="CH.04 · THE ORCHARD DECADES" data-stamp="c.1948" aria-labelledby="h-ch4">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">04</p>
+      <h2 class="sl-title" id="h-ch4">The Orchard Decades</h2>
+      <p class="sl-sub">THE LONG MIDDLE · c. 1948 – 1971 · 00:25:30 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:445px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/curtis-orchard.jpg" alt="Curtis stands on a plank walkway in a bare, newly worked orchard while another man crouches at an irrigation box. About 1948." width="445" height="323" loading="lazy">
+          <img class="ab abr" src="../assets/photos/curtis-orchard.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/curtis-orchard.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <figcaption class="tl">breaking ground · the home orchard · c. 1948</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">Then the pears called in the family debt. Curtis broke ground
+      in the orchard and stayed for decades — grafting, thinning, irrigating, doing
+      arithmetic against frost. This is what the middle of a life looks like when the
+      beginning was aircraft: rows and seasons, hands busy at ground level, while some
+      other part of the man stays up in the air, circling.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:755px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/curtis-middle-age.jpg" alt="Curtis in a light zip jacket beside a lake in winter, head bowed, his face in shadow. Undated." width="755" height="520" loading="lazy">
+          <img class="ab abr" src="../assets/photos/curtis-middle-age.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/curtis-middle-age.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <figcaption class="tl">tracking slips here. leave it.</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">Every archive has one photograph like this, and it is usually the
+      honest one. Winter light, a lake, head down. He never called the orchard a detour.
+      Pears, he said, paid for tools. And tools — give them thirty years —
+      <em>become&nbsp;wings</em>.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.05 ============ -->
+  <section class="chapter" id="ch5" data-ch="CH.05 · THE GLIDER" data-stamp="undated" aria-labelledby="h-ch5">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">05</p>
+      <h2 class="sl-title" id="h-ch5">The Glider</h2>
+      <p class="sl-sub">ONE WINDY AFTERNOON · UNDATED · 00:33:00 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:915px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/glider-field.jpg" alt="A crew of five carries and steadies a large open-frame glider on a bare hillside, winter trees behind them." width="915" height="597" loading="lazy">
+          <img class="ab abr" src="../assets/photos/glider-field.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/glider-field.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Glider</b><i>A HILL OUTSIDE MEDFORD<span class="l3-x"> · CREW OF THE WILLING</span></i></div>
+        </div>
+      </div>
+      <figcaption class="tl">wingspan measured against the truck it rode in on</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">He built a glider. Not a model — a <em>glider</em>, of spruce
+      and wire and doped fabric. He recruited a crew: sons, neighbors, the reliably
+      curious. They walked it up a bald hill into the wind, and Curtis ran the numbers
+      one last time, out loud, the way you do when the test pilot is family.</p>
+    </div>
+
+    <figure class="ph stage rv" style="--nat:861px">
+      <div class="stage-bg" style="background-image:url('../assets/photos/glider-flight.jpg')" aria-hidden="true"></div>
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/glider-flight.jpg" alt="The glider airborne against a white sky, a man hanging beneath its wing, while two people watch from the darkening field below." width="861" height="575" loading="lazy">
+          <img class="ab abr" src="../assets/photos/glider-flight.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/glider-flight.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <span class="marg" aria-hidden="true">do not adjust tracking — that is the sky.</span>
+      <figcaption class="tl">FRAME 4 OF 4 · “the one where it flew”</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">Then it flew. The framing is crooked because the photographer was
+      running. A man is hanging under a wing that was built in a barn, high enough for
+      the word <em>incident</em> to change departments — from farming to aviation.
+      Nobody in the frame is standing casually. The negatives carry no date and the
+      family offers three. On one point every account agrees: it flew, and Curtis never
+      entirely came down.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.06 ============ -->
+  <section class="chapter" id="ch6" data-ch="CH.06 · THE TIPSY BEE" data-stamp="94· 8·27" aria-labelledby="h-ch6">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">06</p>
+      <h2 class="sl-title" id="h-ch6">The Tipsy Bee</h2>
+      <p class="sl-sub">THE MASTERWORK · 1990 – 1994 · 00:41:20 →</p>
+    </header>
+
+    <figure class="ph rv" style="--nat:933px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/helicopter-workshop.jpg" alt="An elderly Curtis in a barn workshop beside the Tipsy Bee: a film-covered rotor nearly the width of the room, with the pedal frame rising at its center. Another man works across the rotor." width="933" height="673" loading="lazy">
+          <img class="ab abr" src="../assets/photos/helicopter-workshop.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/helicopter-workshop.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Tipsy Bee</b><i>HUMAN-POWERED HELICOPTER<span class="l3-x"> · THE WORKSHOP</span> · 1993</i></div>
+        </div>
+      </div>
+      <figcaption class="tl">the barn ran out before the rotor did</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">Every inventor eventually builds the machine that is a
+      self-portrait. Curtis’s was a helicopter powered by nothing but a human being: one
+      rotor nearly the width of the barn that held it, geared to bicycle pedals and the
+      legs of whoever he could talk onto the seat. He named it the
+      <em>Tipsy Bee</em> — a fat, cheerful thing with no business flying, attempting it
+      anyway. He was in his seventies.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:680px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/helicopter-blade.jpg" alt="Close-up of a riveted aluminum rotor rib drilled with lightening holes, resting on living-room carpet, an electric heater in the background." width="742" height="520" loading="lazy">
+          <img class="ab abr" src="../assets/photos/helicopter-blade.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/helicopter-blade.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <span class="marg mleft" aria-hidden="true">the carpet never recovered.</span>
+      <figcaption class="tl">rib &amp; rivets, finished indoors — precision dislikes frost. witness the carpet</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">The mathematics said a strong cyclist produces about one-third of
+      one horsepower. Curtis considered that <em>the horse’s problem</em>. Ribs were
+      machined at home and finished in the living room, because the shop wasn’t heated
+      and aluminum holds a grudge.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:904px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/japan-helicopter.jpg" alt="Inside the Boeing hangar, two members of the Japanese team in red caps pose with young Andrew, who sits at the pedals of their truss-framed helicopter. The camcorder date stamp reads 94 8 26." width="904" height="669" loading="lazy">
+          <img class="ab abr" src="../assets/photos/japan-helicopter.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/japan-helicopter.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Rivals</b><i>THE JAPANESE TEAM<span class="l3-x"> · BOEING HANGAR</span> · 94·8·26</i></div>
+        </div>
+      </div>
+      <figcaption class="tl">the date stamp is the camcorder’s own. the eve of the meet</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">August 26, 1994 — the day before. That is <em>Andrew</em>, the
+      grandson, sitting at the pedals of the rival machine while two of the Japanese
+      team stand by, grinning. Rivals so serious, and so generous, that they let the
+      other side’s kid try the seat. Andrew climbed off that machine with his life more
+      or less&nbsp;decided.</p>
+    </div>
+
+    <figure class="ph stage rv" style="--nat:756px">
+      <div class="stage-bg" style="background-image:url('../assets/photos/tipsy-bee-boeing.jpg')" aria-hidden="true"></div>
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/tipsy-bee-boeing.jpg" alt="The Tipsy Bee on the Boeing hangar floor, its white rotor blades laid out like a compass rose, a pedaler upright at the center, officials and family watching from the walls. The camcorder date stamp reads 94 8 27." width="756" height="613" loading="lazy">
+          <img class="ab abr" src="../assets/photos/tipsy-bee-boeing.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/tipsy-bee-boeing.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>Competition Day</b><i><span class="l3-x">INTL. HUMAN-POWERED HELICOPTER MEET · </span>94·8·27</i></div>
+        </div>
+      </div>
+      <span class="marg" aria-hidden="true">someone is clapping off-frame. it’s Gram.</span>
+      <figcaption class="tl">a pear farmer’s helicopter, indoors at Boeing, with its name painted on</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">August 27, 1994. The Tipsy Bee on the hangar floor, rotor laid out
+      like a compass rose, a pedaler aboard, family on folding chairs. It did not set
+      the record that day. It did something rarer — <em>it existed</em>: a helicopter
+      from a pear farm, indoors at Boeing, with its inventor watching from a metal chair
+      with his arms crossed, satisfied.</p>
+    </div>
+
+    <figure class="ph rv" style="--nat:560px">
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/andrew-pedaling.jpg" alt="Andrew in a helmet pedals the family machine on the hangar floor, the rotor ring stretching across the frame, while a man strides past in the foreground." width="605" height="753" loading="lazy">
+          <img class="ab abr" src="../assets/photos/andrew-pedaling.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/andrew-pedaling.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+      <figcaption class="tl">Andrew, at Boeing Field, applying one-third of one horsepower</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv">And this is Andrew on the family machine, pedaling with everything a
+      boy has — which the math rates at a third of a horsepower, and the family rates
+      considerably higher. Look at the rotor: that is the same span you saw filling the
+      barn. Some families hand down a watch.</p>
+    </div>
+  </section>
+
+  <!-- ============ CH.07 ============ -->
+  <section class="chapter" id="ch7" data-ch="CH.07 · THE LAST PEAR TREE" data-stamp="PRESENT DAY" aria-labelledby="h-ch7">
+    <header class="slate rv">
+      <p class="sl-num" aria-hidden="true">07</p>
+      <h2 class="sl-title" id="h-ch7">The Last Pear Tree</h2>
+      <p class="sl-sub">GOLDEN HOUR · PRESENT DAY · 00:52:45 →</p>
+    </header>
+
+    <figure class="ph stage rv" style="--nat:1049px">
+      <div class="stage-bg" style="background-image:url('../assets/photos/last-pear-tree.jpg')" aria-hidden="true"></div>
+      <div class="print">
+        <div class="pm">
+          <img src="../assets/photos/last-pear-tree.jpg" alt="Branches of the last pear tree heavy with fruit at golden hour, a sunlit field and low hills glowing behind." width="1049" height="743" loading="lazy">
+          <img class="ab abr" src="../assets/photos/last-pear-tree.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img class="ab abc" src="../assets/photos/last-pear-tree.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+        <div class="l3"><span class="l3-bar"></span>
+          <div class="l3-t"><b>The Last Pear Tree</b><i>THE HOME PLACE · GOLDEN HOUR<span class="l3-x"> · KODAK GOLD</span></i></div>
+        </div>
+      </div>
+      <span class="marg mleft" aria-hidden="true">taped over a wedding for this. worth it.</span>
+      <figcaption class="tl">kept for the same reason as this tape: proof</figcaption>
+    </figure>
+
+    <div class="nar">
+      <p class="rv lede">The orchard is mostly memory now — economics, time, the usual
+      weather. One pear tree still stands, and at golden hour it does this. The family
+      kept it for the same reason they kept the tape you are watching.</p>
+      <p class="rv">The farm itself refused to end; it pivoted. Bees instead of
+      propellers, brine instead of dope-and-fabric; <em>honey, mead, and pickles</em>
+      where the packing crates used to stack. Andrew runs it now. And the name on every
+      jar is the Tipsy Bee — a machine that tried to fly on the strength of a single
+      human being. Which is, if you think about it, a fair description of a family
+      farm.</p>
+    </div>
+
+    <div class="closer rv">
+      <p>End of tape. The bees continue.</p>
+    </div>
+  </section>
+
+  <!-- ============ CREDITS / END OF TAPE ============ -->
+  <section class="credits chapter" data-ch="END OF TAPE" data-stamp="■ STOP" aria-label="Credits and site index">
+    <p class="stop-osd rv" aria-hidden="true">■ STOP</p>
+
+    <dl class="roll rv">
+      <div><dt>SHOT ON</dt><span class="dots"></span><dd>various cameras, none level</dd></div>
+      <div><dt>TRANSFERRED FROM</dt><span class="dots"></span><dd>VHS · SP mode · one sitting</dd></div>
+      <div><dt>PEARS</dt><span class="dots"></span><dd>the great-grandfather</dd></div>
+      <div><dt>ALTITUDE</dt><span class="dots"></span><dd>Curtis</dd></div>
+      <div><dt>LEGS</dt><span class="dots"></span><dd>Andrew</dd></div>
+      <div><dt>ARCHIVE</dt><span class="dots"></span><dd>Tipsy Bee Farms · Medford, Ore.</dd></div>
+    </dl>
+
+    <nav class="shelf rv" aria-label="The five Tipsy Bee sites">
+      <h2 class="shelf-h">ALSO ON THIS SHELF</h2>
+      <a class="spine" href="../hive/"><span class="t-n">T-01</span><b>Hive</b><i>the front door — a living swarm</i></a>
+      <a class="spine" href="../orchard/"><span class="t-n">T-02</span><b>Orchard</b><i>a pear tree draws itself</i></a>
+      <a class="spine" href="./" aria-current="page"><span class="t-n">T-03</span><b>Lineage</b><i>this tape</i><span class="now">● NOW PLAYING</span></a>
+      <a class="spine" href="../cellar/"><span class="t-n">T-04</span><b>Cellar</b><i>the provisions, in print</i></a>
+      <a class="spine" href="../arcade/"><span class="t-n">T-05</span><b>Arcade</b><i>pedal the Tipsy Bee yourself</i></a>
+    </nav>
+
+    <button class="rew-btn" id="rewBtn">⏪ REWIND TAPE</button>
+    <p class="rew-hint" aria-hidden="true">BE KIND — OR PRESS R ANYWHERE</p>
+
+    <p class="colophon">TIPSY BEE FARMS · ROGUE VALLEY · MEDFORD, OREGON<br>
+      HONEY · MEAD · PICKLES — EST. SOMEWHERE BETWEEN THE PEARS AND THE HELICOPTER</p>
+  </section>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var R = document.documentElement;
+  var main = document.getElementById('main');
+  var tcEl = document.getElementById('tc');
+  var hudCh = document.getElementById('hud-ch');
+  var hudSt = document.getElementById('hud-st');
+  var trk = document.getElementById('trk');
+
+  /* ---------- scroll velocity + tape effects ---------- */
+  var lastY = window.scrollY, vel = 0, t = 0, docH = 0;
+  function measure(){ docH = R.scrollHeight - window.innerHeight; }
+  window.addEventListener('resize', measure);
+  window.addEventListener('load', measure);
+  measure();
+
+  var TAPE_SECONDS = 3599; /* a T-60, SP mode */
+  function pad(n){ return (n<10?'0':'')+n; }
+
+  var liveFigs = [];
+
+  var paused = false, forcedVel = -1;
+
+  function frame(){
+    if (paused){ requestAnimationFrame(frame); return; }
+    var y = window.scrollY;
+    var dy = y - lastY; lastY = y;
+    var target = Math.min(Math.abs(dy)/38, 1);
+    vel += (target > vel ? 0.28 : 0.055) * (target - vel);
+    if (vel < 0.001) vel = 0;
+    if (forcedVel >= 0) vel = forcedVel;
+
+    if(!reduced){
+      R.style.setProperty('--vel', vel.toFixed(3));
+      R.style.setProperty('--abpx', (vel*vel*3.4).toFixed(2)+'px');
+      t += 0.016;
+      if (vel > 0.02){
+        var n = Math.sin(t*13.7)*0.6 + Math.sin(t*7.3+1.7)*0.4;
+        var wy = (n * vel * 2.8).toFixed(2);
+        var sk = (Math.sin(t*9.1) * vel * 0.15).toFixed(3);
+        main.style.transform = 'translate3d(0,'+wy+'px,0) skewX('+sk+'deg)';
+      } else if (main.style.transform){
+        main.style.transform = '';
+      }
+      trk.classList.toggle('on', vel > 0.55);
+      /* gentle parallax on live prints */
+      var vh = window.innerHeight;
+      for (var i=0;i<liveFigs.length;i++){
+        var pm = liveFigs[i];
+        var r = pm.getBoundingClientRect();
+        var off = ((r.top + r.height/2) - vh/2) / vh; /* -1..1 */
+        pm.style.transform = 'translate3d(0,'+(off*-9).toFixed(2)+'px,0)';
+      }
+    }
+
+    /* timecode tied to tape position */
+    if (docH > 0){
+      var p = Math.min(Math.max(y/docH, 0), 1);
+      var secs = p * TAPE_SECONDS;
+      var mm = Math.floor(secs/60), ss = Math.floor(secs%60), ff = Math.floor((secs%1)*30);
+      var out = '00:'+pad(mm)+':'+pad(ss)+';'+pad(ff);
+      if (tcEl.textContent !== out) tcEl.textContent = out;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---------- reveal on intersect ---------- */
+  var revIO = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('on'); revIO.unobserve(e.target); }
+    });
+  }, {threshold: 0.14});
+  document.querySelectorAll('.rv').forEach(function(el){ revIO.observe(el); });
+
+  /* ---------- HUD chapter + date-stamp updates ---------- */
+  var chIO = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        var s = e.target;
+        if (hudCh.textContent !== s.dataset.ch){
+          hudCh.textContent = s.dataset.ch;
+          hudSt.textContent = s.dataset.stamp;
+          [hudCh, hudSt].forEach(function(el){
+            el.classList.remove('flick'); void el.offsetWidth; el.classList.add('flick');
+          });
+        }
+      }
+    });
+  }, {rootMargin: '-46% 0px -46% 0px'});
+  document.querySelectorAll('.chapter').forEach(function(s){ chIO.observe(s); });
+
+  /* ---------- live figures (aberration layers + parallax) ---------- */
+  var liveIO = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      var fig = e.target, pm = fig.querySelector('.pm');
+      if (e.isIntersecting){
+        fig.classList.add('live');
+        if (liveFigs.indexOf(pm) < 0) liveFigs.push(pm);
+      } else {
+        fig.classList.remove('live');
+        var ix = liveFigs.indexOf(pm);
+        if (ix >= 0){ pm.style.transform=''; liveFigs.splice(ix,1); }
+      }
+    });
+  }, {rootMargin: '18% 0px 18% 0px'});
+  document.querySelectorAll('.ph').forEach(function(f){ liveIO.observe(f); });
+
+  /* ---------- OSD index menu ---------- */
+  var osd = document.getElementById('osd');
+  var ixBtn = document.getElementById('ixBtn');
+  var osdClose = document.getElementById('osdClose');
+  function openOsd(){
+    osd.hidden = false;
+    ixBtn.setAttribute('aria-expanded','true');
+    var first = osd.querySelector('a'); if (first) first.focus();
+  }
+  function closeOsd(){
+    osd.hidden = true;
+    ixBtn.setAttribute('aria-expanded','false');
+    ixBtn.focus();
+  }
+  ixBtn.addEventListener('click', function(){ osd.hidden ? openOsd() : closeOsd(); });
+  osdClose.addEventListener('click', closeOsd);
+  osd.addEventListener('click', function(e){ if (e.target === osd) closeOsd(); });
+  document.addEventListener('keydown', function(e){
+    if (osd.hidden) return;
+    if (e.key === 'Escape'){ closeOsd(); return; }
+    if (e.key === 'Tab'){
+      var f = osd.querySelectorAll('a,button');
+      var first = f[0], last = f[f.length-1];
+      if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+    }
+  });
+
+  /* ---------- PAUSE: freeze-frame ---------- */
+  var psBtn = document.getElementById('psBtn');
+  function setPaused(on){
+    paused = on;
+    document.documentElement.classList.toggle('paused', on);
+    document.body.style.overflow = on ? 'hidden' : '';
+    psBtn.setAttribute('aria-pressed', String(on));
+    psBtn.textContent = on ? '▶ PLAY' : '⏸ PAUSE';
+    if (!on){ lastY = window.scrollY; }
+  }
+  psBtn.addEventListener('click', function(){ setPaused(!paused); });
+
+  /* ---------- REWIND: back to the head of the tape ---------- */
+  var rewBtn = document.getElementById('rewBtn');
+  var rewOsd = document.getElementById('rewOsd');
+  var rewinding = false;
+  function easeInOutQuint(t){ return t < .5 ? 16*t*t*t*t*t : 1 - Math.pow(-2*t+2,5)/2; }
+  function rewind(){
+    if (rewinding) return;
+    if (paused) setPaused(false);
+    if (reduced){ window.scrollTo(0,0); lastY = 0; return; }
+    rewinding = true;
+    forcedVel = 1;
+    document.documentElement.classList.add('rewinding');
+    rewOsd.textContent = '◀◀ REW';
+    var from = window.scrollY;
+    var dur = Math.min(2600, 900 + from/14);
+    var t0 = performance.now();
+    (function step(now){
+      var p = Math.min((now - t0)/dur, 1);
+      window.scrollTo(0, Math.round(from * (1 - easeInOutQuint(p))));
+      if (p < 1){ requestAnimationFrame(step); return; }
+      lastY = 0;
+      forcedVel = -1;
+      rewinding = false;
+      document.documentElement.classList.remove('rewinding');
+      rewOsd.textContent = '▶ PLAY';
+      rewOsd.classList.add('play-flash');
+      setTimeout(function(){ rewOsd.classList.remove('play-flash'); }, 900);
+    })(t0);
+  }
+  rewBtn.addEventListener('click', rewind);
+
+  document.addEventListener('keydown', function(e){
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (!osd.hidden) return;
+    if (e.key === 'p' || e.key === 'P'){ setPaused(!paused); }
+    else if (e.key === 'r' || e.key === 'R'){ rewind(); }
+  });
+})();
+</script>
+</body>
+</html>

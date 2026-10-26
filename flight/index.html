@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Flight — Tipsy Bee Farms</title>
+<meta name="description" content="One bee, one scroll: from the hive, across the orchard, through the 1994 hangar, into the jar. The whole farm in ninety seconds." />
+<meta property="og:title" content="The Flight — Tipsy Bee Farms" />
+<meta property="og:description" content="One bee, one scroll: hive → orchard → hangar → jar. The whole farm in ninety seconds." />
+<meta property="og:image" content="../assets/estate/hero-sunset-orchard.jpg" />
+<meta property="og:type" content="website" />
+<link rel="icon" href="../assets/brand/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,550;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,550&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --honey:#F5B426; --honey-deep:#B8730E; --wax:#FBE7A1; --ink:#171006;
+    --soil:#0F0A04; --cream:#FBF3DE;
+    --ser:"Fraunces",serif; --san:"Inter",system-ui,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:auto}
+  body{background:var(--soil);color:var(--cream);font-family:var(--san);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit}
+  ::selection{background:var(--honey);color:var(--ink)}
+
+  /* grain */
+  body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  #scrollway{height:1200vh}
+  canvas#stage{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+
+  /* ---------- chrome ---------- */
+  .chrome{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:14px;
+    padding:14px clamp(16px,3vw,36px)}
+  .chrome .crumb{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .chrome .crumb img{width:34px;height:34px;filter:drop-shadow(0 2px 8px #000)}
+  .chrome .crumb b{font-family:var(--ser);font-weight:900;font-size:15px;text-shadow:0 1px 10px #000}
+  .chrome .skip{margin-left:auto;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--wax);text-decoration:none;border:1px solid #fbe7a155;border-radius:999px;padding:8px 16px;
+    background:#0f0a04aa;backdrop-filter:blur(8px);transition:border-color .4s,color .4s}
+  .chrome .skip:hover,.chrome .skip:focus-visible{border-color:var(--honey);color:var(--honey)}
+  #humBtn{font-size:12px;background:#0f0a04aa;border:1px solid #fbe7a155;border-radius:999px;
+    color:var(--wax);padding:8px 12px;cursor:pointer;backdrop-filter:blur(8px)}
+  #humBtn:hover{border-color:var(--honey)}
+
+  /* ---------- HUD ---------- */
+  .hud{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 clamp(16px,3vw,36px) 14px;pointer-events:none}
+  .hud .line{height:2px;background:#fbe7a122;border-radius:2px;overflow:hidden}
+  .hud .line b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--honey-deep),var(--honey))}
+  .hud .stops{display:flex;justify-content:space-between;margin-top:8px;
+    font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#b9a97e}
+  .hud .stops span.on{color:var(--honey)}
+
+  /* ---------- scene copy overlays ---------- */
+  .ov{position:fixed;z-index:30;opacity:0;transform:translateY(22px);pointer-events:none;
+    transition:opacity .001s linear} /* JS drives opacity directly; transition off */
+  .ov.card{background:#0f0a04b8;backdrop-filter:blur(10px);border:1px solid #fbe7a125;
+    border-radius:14px;padding:22px 26px}
+  .ov .k{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--honey);margin-bottom:10px}
+  .ov h2{font-family:var(--ser);font-weight:900;letter-spacing:-.02em;line-height:1.02;
+    font-size:clamp(30px,4.6vw,58px);color:#fff;text-shadow:0 2px 24px #000c}
+  .ov h2 em{font-style:italic;font-weight:550;color:var(--honey)}
+  .ov p{margin-top:12px;max-width:46ch;font-size:clamp(13.5px,1.5vw,16.5px);color:#eee1c2;text-shadow:0 1px 12px #000}
+  .ov .cap{font-family:var(--ser);font-style:italic;font-size:13px;color:#d8c69a}
+  .ov a{pointer-events:auto}
+
+  #ov-wake{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
+  #ov-wake .scrollcue{margin-top:26px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#b9a97e}
+  #ov-hive{left:clamp(16px,6vw,90px);bottom:16vh;max-width:520px}
+  #ov-orchard{right:clamp(16px,6vw,90px);bottom:14vh;max-width:520px;text-align:right}
+  #ov-orchard p{margin-left:auto}
+  #ov-hangar{left:clamp(16px,6vw,90px);top:16vh;max-width:560px}
+  #ov-jar{left:50%;top:12vh;transform:translateX(-50%);text-align:center;max-width:640px}
+  #ov-shelf{left:50%;bottom:13vh;transform:translateX(-50%);text-align:center;max-width:720px}
+  #ov-landing{left:50%;top:44%;transform:translate(-50%,-50%);text-align:center}
+
+  /* jar cost chips */
+  .chips{position:fixed;z-index:30;left:50%;bottom:15vh;transform:translateX(-50%);
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:760px;pointer-events:none}
+  .chip{opacity:0;transform:translateY(16px) scale(.92);
+    font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--ink);
+    background:linear-gradient(180deg,#fdf0c6,var(--wax));border-radius:999px;padding:7px 13px;
+    box-shadow:0 6px 18px -6px #000c}
+  .chip b{font-family:var(--ser)}
+  .chip.total{background:linear-gradient(180deg,#ffd25e,var(--honey));font-size:13px;padding:9px 18px}
+
+  /* shelf CTAs */
+  .ctas{margin-top:18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .ctas a{pointer-events:auto;text-decoration:none;font-weight:600;font-size:13.5px;border-radius:999px;padding:11px 22px;
+    transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+  .ctas a:hover,.ctas a:focus-visible{transform:translateY(-2px)}
+  .ctas .buy{background:var(--honey);color:var(--ink);box-shadow:0 10px 26px -10px #f5b42688}
+  .ctas .ghost{border:1px solid #fbe7a166;color:var(--wax)}
+
+  /* landing doors */
+  .doors{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .doors a{pointer-events:auto;text-decoration:none;font-family:var(--ser);font-weight:700;font-size:14px;
+    color:var(--wax);border:1px solid #fbe7a133;border-radius:10px;padding:10px 16px;
+    transition:border-color .4s,color .4s,transform .4s var(--ease)}
+  .doors a:hover,.doors a:focus-visible{border-color:var(--honey);color:var(--honey);transform:translateY(-3px)}
+
+  /* ---------- static fallback (reduced motion / no WebGL) ---------- */
+  #fallback{display:none;max-width:760px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(18px,4vw,32px) 90px}
+  body.static #scrollway,body.static canvas#stage,body.static .hud,body.static .ov,body.static .chips,body.static #humBtn{display:none}
+  body.static #fallback{display:block}
+  #fallback header{margin:8vh 0 7vh}
+  #fallback .k{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--honey);margin-bottom:12px}
+  #fallback h1{font-family:var(--ser);font-weight:900;font-size:clamp(38px,7vw,64px);line-height:.98;letter-spacing:-.02em}
+  #fallback h1 em{font-style:italic;font-weight:550;color:var(--honey)}
+  #fallback .lede{margin-top:18px;color:#d8c9a4;font-size:16.5px;max-width:56ch}
+  #fallback section{margin:54px 0}
+  #fallback h2{font-family:var(--ser);font-weight:700;font-size:clamp(22px,3.4vw,30px);margin-bottom:10px}
+  #fallback p{color:#d8c9a4;font-size:15px;max-width:60ch}
+  #fallback img{max-width:100%;height:auto;display:block}
+  #fallback figure{margin:20px 0;background:#fdf6e4;padding:10px 10px 14px;border-radius:4px;max-width:460px;
+    box-shadow:0 16px 40px -18px #000c}
+  #fallback figcaption{margin-top:10px;font-family:var(--ser);font-style:italic;font-size:12.5px;color:#4a3a1a;text-align:center}
+  #fallback table{border-collapse:collapse;margin:16px 0;font-size:14px}
+  #fallback td{padding:6px 18px 6px 0;border-bottom:1px solid #fbe7a11c;color:#e4d6b4}
+  #fallback td:last-child{font-family:var(--ser);font-weight:700;text-align:right}
+  #fallback .foot{margin-top:60px;font-size:13px;color:#a08c60}
+  #fallback a{color:var(--wax)}
+
+  @media(max-width:700px){
+    #ov-hive,#ov-hangar{left:16px;right:16px;max-width:none}
+    #ov-orchard{left:16px;right:16px;max-width:none;text-align:left}
+    #ov-orchard p{margin-left:0}
+    .chips{left:16px;right:16px;transform:none}
+    .hud .stops span{display:none}
+    .hud .stops span.cur{display:inline}
+  }
+  @media(prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+</style>
+
+<div id="scrollway" aria-hidden="true"></div>
+<canvas id="stage" aria-hidden="true"></canvas>
+
+<header class="chrome">
+  <a class="crumb" href="../"><img src="../assets/brand/logo.png" alt="" /><b>Tipsy Bee Farms</b></a>
+  <button id="humBtn" type="button" aria-pressed="false" title="toggle the hum">hum · off</button>
+  <a class="skip" href="../#collection">skip to the shelf →</a>
+</header>
+
+<div class="hud" aria-hidden="true">
+  <div class="line"><b id="hudFill"></b></div>
+  <div class="stops" id="hudStops">
+    <span data-p="0">wake</span><span data-p=".08">hive</span><span data-p=".24">orchard</span>
+    <span data-p=".44">hangar</span><span data-p=".60">the jar</span><span data-p=".80">shelf</span>
+    <span data-p=".94">landing</span>
+  </div>
+</div>
+
+<!-- ============ scene overlays ============ -->
+<div class="ov" id="ov-wake">
+  <p class="k">Tipsy Bee Farms presents</p>
+  <h2>Every jar starts<br /><em>with a flight.</em></h2>
+  <p class="scrollcue">Scroll — she knows the way</p>
+</div>
+
+<div class="ov card" id="ov-hive">
+  <p class="k">I · The Hive</p>
+  <h2>The honey is not an ingredient. <em>It is the thesis.</em></h2>
+  <p>Our own hives, our own comb — $270 for five gallons, and we brine every jar of
+     pickles with it anyway. Zero refined sugar on this farm. The bees set the standard;
+     we just keep up.</p>
+</div>
+
+<div class="ov card" id="ov-orchard">
+  <p class="k">II · The Orchard</p>
+  <h2>Four generations of <em>Rogue Valley stubbornness.</em></h2>
+  <p>Twenty-six acres, farmed to the NRCS soil survey instead of against it.
+     The pears came first — by the mountain-load.</p>
+  <p class="cap">c. 1931 — he grew every pear in the photograph.</p>
+</div>
+
+<div class="ov card" id="ov-hangar">
+  <p class="k">III · The Hangar · 27 Aug 1994</p>
+  <h2>This family pedaled a helicopter <em>off a Boeing hangar floor.</em></h2>
+  <p>Built by hand, named the <em>Tipsy Bee</em>, flown by leg. The rival's mark stood at
+     19.46 seconds; the skids left the concrete and the family never quite landed.
+     You can pedal it yourself in the <a href="../arcade/" style="color:var(--honey)">Arcade</a>.</p>
+</div>
+
+<div class="ov" id="ov-jar">
+  <p class="k">IV · The Jar</p>
+  <h2>“Why aren’t your pickles <em>$4.99?”</em></h2>
+</div>
+<div class="chips" id="chips">
+  <span class="chip">cucumbers <b>$3.00</b></span>
+  <span class="chip">kitchen &amp; labor <b>$1.70</b></span>
+  <span class="chip">jar, lid &amp; band <b>$1.00</b></span>
+  <span class="chip">labels <b>$0.52</b></span>
+  <span class="chip">Joey’s hot sauce <b>$0.50</b></span>
+  <span class="chip">estate honey <b>$0.31</b></span>
+  <span class="chip">cipollini <b>$0.26</b></span>
+  <span class="chip">vinegar <b>$0.24</b></span>
+  <span class="chip">dill <b>$0.19</b></span>
+  <span class="chip">garlic <b>$0.14</b></span>
+  <span class="chip">salt <b>$0.06</b></span>
+  <span class="chip total">= $7.92, to the penny · $18 on the table</span>
+</div>
+
+<div class="ov" id="ov-shelf">
+  <p class="k">V · The Shelf</p>
+  <h2>Five things we make <em>slowly, on purpose.</em></h2>
+  <p>Original Spears $18 · Kraken $20 · Relish $11 · Estate Honey $12 · Pastured Eggs $7</p>
+  <div class="ctas">
+    <a class="buy" href="../#collection">Visit the estate</a>
+    <a class="ghost" href="mailto:hello@tipsy.farm">Write us</a>
+  </div>
+</div>
+
+<div class="ov" id="ov-landing">
+  <p class="k">VI · Landing</p>
+  <h2>The farm has <em>five more rooms.</em></h2>
+  <div class="doors">
+    <a href="../hive/">Hive</a><a href="../orchard/">Orchard</a><a href="../lineage/">Lineage</a>
+    <a href="../cellar/">Cellar</a><a href="../arcade/">Arcade</a>
+  </div>
+</div>
+
+<!-- ============ static fallback ============ -->
+<article id="fallback">
+  <header>
+    <p class="k">Tipsy Bee Farms presents</p>
+    <h1>Every jar starts <em>with a flight.</em></h1>
+    <p class="lede">The moving version of this page follows a single bee from the hive to the
+      shelf. Your settings asked for stillness, so here is the same flight, told plainly —
+      it loses none of its facts on the ground.</p>
+  </header>
+  <section>
+    <h2>I · The Hive</h2>
+    <p>The honey is not an ingredient; it is the thesis. Our own hives, our own comb —
+       $270 for five gallons, and we brine every jar of pickles with it anyway.
+       Zero refined sugar on this farm.</p>
+  </section>
+  <section>
+    <h2>II · The Orchard</h2>
+    <p>Twenty-six acres of the Rogue Valley, farmed to the NRCS soil survey instead of
+       against it. The pears came first — by the mountain-load.</p>
+    <figure><img src="../assets/photos/pear-mountain.jpg" width="704" height="513" loading="lazy"
+      alt="Sepia photograph, about 1931: the great-grandfather sits half-buried in an enormous mountain of harvested pears." />
+      <figcaption>c. 1931 — he grew every pear in the photograph.</figcaption></figure>
+  </section>
+  <section>
+    <h2>III · The Hangar · 27 Aug 1994</h2>
+    <p>This family pedaled a helicopter it built itself off a Boeing hangar floor. It was
+       named the <em>Tipsy Bee</em>. The rival's mark stood at 19.46 seconds; the skids left
+       the concrete and the family never quite landed. You can pedal it yourself in the
+       <a href="../arcade/">Arcade</a>.</p>
+    <figure><img src="../assets/photos/tipsy-bee-boeing.jpg" width="756" height="613" loading="lazy"
+      alt="The Tipsy Bee human-powered helicopter being pedaled on the Boeing hangar floor, photo date-stamped 94-8-27." />
+      <figcaption>The Tipsy Bee, 27 August 1994.</figcaption></figure>
+  </section>
+  <section>
+    <h2>IV · The Jar</h2>
+    <p>“Why aren’t your pickles $4.99?” The honest arithmetic of one Original quart:</p>
+    <table>
+      <tr><td>Cucumbers, one full pound</td><td>$3.00</td></tr>
+      <tr><td>Rented kitchen &amp; labor</td><td>$1.70</td></tr>
+      <tr><td>Jar, lid &amp; band</td><td>$1.00</td></tr>
+      <tr><td>Labels, side &amp; lid</td><td>$0.52</td></tr>
+      <tr><td>Joey's hot sauce</td><td>$0.50</td></tr>
+      <tr><td>Estate honey</td><td>$0.31</td></tr>
+      <tr><td>Cipollini onion</td><td>$0.26</td></tr>
+      <tr><td>Vinegar</td><td>$0.24</td></tr>
+      <tr><td>Fresh dill</td><td>$0.19</td></tr>
+      <tr><td>Garlic</td><td>$0.14</td></tr>
+      <tr><td>Salt</td><td>$0.06</td></tr>
+      <tr><td><b>All-in, to the penny</b></td><td><b>$7.92</b></td></tr>
+    </table>
+    <p>$18 on the table. The difference is how we farm — and that we tell you.</p>
+  </section>
+  <section>
+    <h2>V · The Shelf</h2>
+    <p>Original Pirate Shack Spears $18 · Kraken Super Spicy Spears $20 · Pirate Shack
+       Relish $11 · Estate Honey $12 · Pastured Eggs $7.
+       <a href="../#collection">Visit the estate</a> or <a href="mailto:hello@tipsy.farm">write us</a>.</p>
+  </section>
+  <section>
+    <h2>VI · Landing</h2>
+    <p>The farm has five more rooms: <a href="../hive/">the Hive</a>, <a href="../orchard/">the
+       Orchard</a>, <a href="../lineage/">the Lineage</a>, <a href="../cellar/">the Cellar</a>,
+       and <a href="../arcade/">the Arcade</a>.</p>
+  </section>
+  <p class="foot">Tipsy Bee Farms · Medford, Oregon · <a href="../">back to the estate</a></p>
+</article>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canWebGL = (() => { try { const c = document.createElement('canvas');
+  return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+
+if (reduce || !canWebGL) {
+  document.body.classList.add('static');
+} else {
+  const THREE = await import('three');
+
+  /* ---------- boot ---------- */
+  const canvas = document.getElementById('stage');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const mobile = innerWidth < 700;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.75));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(55, 1, .1, 400);
+  const fog = new THREE.FogExp2(0x0f0a04, .035);
+  scene.fog = fog;
+
+  const dotCv = document.createElement('canvas'); dotCv.width = dotCv.height = 64;
+  { const dc = dotCv.getContext('2d');
+    const g = dc.createRadialGradient(32, 32, 2, 32, 32, 30);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.4, 'rgba(255,255,255,.6)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    dc.fillStyle = g; dc.fillRect(0, 0, 64, 64); }
+  const dotTex = new THREE.CanvasTexture(dotCv);
+
+  const texLoader = new THREE.TextureLoader();
+  const loadTex = url => { const t = texLoader.load(url); t.colorSpace = THREE.SRGBColorSpace; return t; };
+
+  /* ---------- the bee ---------- */
+  const bee = new THREE.Group();
+  {
+    const body = new THREE.Mesh(
+      new THREE.CapsuleGeometry(.16, .3, 6, 12),
+      new THREE.MeshStandardMaterial({ color: 0xF5B426, roughness: .55 }));
+    body.rotation.z = Math.PI / 2;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.13, 12, 12),
+      new THREE.MeshStandardMaterial({ color: 0x171006, roughness: .5 }));
+    head.position.x = .34;
+    const stripes = [];
+    for (let i = 0; i < 2; i++) {
+      const s = new THREE.Mesh(new THREE.TorusGeometry(.15 - i*.01, .028, 8, 20),
+        new THREE.MeshStandardMaterial({ color: 0x171006, roughness: .55 }));
+      s.rotation.y = Math.PI / 2; s.position.x = -.02 - i * .16; stripes.push(s);
+    }
+    const wingGeo = new THREE.PlaneGeometry(.52, .26);
+    const wingMat = new THREE.MeshBasicMaterial({ color: 0xFBE7A1, transparent: true,
+      opacity: .62, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+    const wL = new THREE.Mesh(wingGeo, wingMat); wL.position.set(.02, .13, .12);
+    const wR = new THREE.Mesh(wingGeo, wingMat); wR.position.set(.02, .13, -.12);
+    const glow = new THREE.PointLight(0xF5B426, 14, 9, 1.8); glow.position.set(0, .1, 0);
+    bee.add(body, head, ...stripes, wL, wR, glow);
+    bee.scale.setScalar(.72);
+    bee.userData = { wL, wR };
+    scene.add(bee);
+  }
+
+  /* pollen wake (upgrade pass 3 candidate baked in cheap) */
+  const WAKE_N = mobile ? 60 : 140;
+  const wakeGeo = new THREE.BufferGeometry();
+  const wakePos = new Float32Array(WAKE_N * 3).fill(0);
+  const wakeAge = new Float32Array(WAKE_N).fill(9);
+  wakeGeo.setAttribute('position', new THREE.BufferAttribute(wakePos, 3));
+  const wake = new THREE.Points(wakeGeo, new THREE.PointsMaterial({
+    color: 0xF5B426, size: .06, map: dotTex, transparent: true, opacity: .5, depthWrite: false, blending: THREE.AdditiveBlending }));
+  scene.add(wake);
+  let wakeI = 0;
+
+  /* ---------- ambient light ---------- */
+  scene.add(new THREE.AmbientLight(0xFBE7A1, .35));
+  const key = new THREE.DirectionalLight(0xFFE1A0, 1.1); key.position.set(4, 6, 3); scene.add(key);
+
+  /* ---------- scene 1: hive tunnel ---------- */
+  const hive = new THREE.Group();
+  {
+    const hexGeo = new THREE.CylinderGeometry(.52, .52, .4, 6);
+    const hexMat = new THREE.MeshStandardMaterial({ color: 0xB8730E, roughness: .7,
+      emissive: 0x3a2405, emissiveIntensity: .4 });
+    const N = mobile ? 460 : 700;
+    const inst = new THREE.InstancedMesh(hexGeo, hexMat, N);
+    const M = new THREE.Matrix4(), Q = new THREE.Quaternion()
+      .setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
+    const S = new THREE.Vector3(1, 1, 1);
+    for (let i = 0; i < N; i++) {
+      const ring = Math.floor(i / 20), a = (i % 20) / 20 * Math.PI * 2 + ring * .19;
+      const r = 2.7 + Math.sin(ring * 1.7 + a * 3) * .55;
+      const z = -26 - ring * 2.2;
+      M.compose(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, z), Q,
+        S.setScalar(.85 + Math.abs(Math.sin(a * 5 + ring)) * .35));
+      inst.setMatrixAt(i, M);
+    }
+    hive.add(inst);
+    const heart = new THREE.PointLight(0xF5B426, 52, 60, 1.5); heart.position.set(0, 0, -85); hive.add(heart);
+    scene.add(hive);
+  }
+
+  /* ---------- scene 2: orchard ---------- */
+  const orchard = new THREE.Group(); orchard.position.z = -120;
+  {
+    const skyCv = document.createElement('canvas'); skyCv.width = 4; skyCv.height = 512;
+    const sg = skyCv.getContext('2d');
+    const grad = sg.createLinearGradient(0, 0, 0, 512);
+    grad.addColorStop(0, '#7A5CC4'); grad.addColorStop(.42, '#C05A6E');
+    grad.addColorStop(.66, '#E0574C'); grad.addColorStop(.86, '#F5A126'); grad.addColorStop(1, '#FBD977');
+    sg.fillStyle = grad; sg.fillRect(0, 0, 4, 512);
+    const skyTex = new THREE.CanvasTexture(skyCv); skyTex.colorSpace = THREE.SRGBColorSpace;
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(320, 150),
+      new THREE.MeshBasicMaterial({ map: skyTex, fog: false, transparent: true }));
+    sky.position.set(0, 30, -95); orchard.add(sky);
+    const sun = new THREE.Mesh(new THREE.CircleGeometry(11, 40),
+      new THREE.MeshBasicMaterial({ color: 0xFFF3C4, fog: false, transparent: true, opacity: .95 }));
+    sun.position.set(14, -1.5, -94); orchard.add(sun);
+    const sunGlow = new THREE.Mesh(new THREE.CircleGeometry(19, 40),
+      new THREE.MeshBasicMaterial({ color: 0xF5A126, fog: false, transparent: true, opacity: .22, blending: THREE.AdditiveBlending, depthWrite: false }));
+    sunGlow.position.set(14, -1.5, -94.5); orchard.add(sunGlow);
+    orchard.userData = { sky, sun, sunGlow };
+    // silhouette trees: cheap cones + trunks
+    const tGeo = new THREE.ConeGeometry(1.6, 4.4, 7);
+    const tMat = new THREE.MeshBasicMaterial({ color: 0x120c04 });
+    const N = mobile ? 26 : 54;
+    const trees = new THREE.InstancedMesh(tGeo, tMat, N);
+    const M = new THREE.Matrix4();
+    for (let i = 0; i < N; i++) {
+      const x = (Math.random() - .5) * (mobile ? 40 : 90), z = -20 - Math.random() * 85;
+      M.makeTranslation(x, -4.2 + 2.2, z); trees.setMatrixAt(i, M);
+    }
+    orchard.add(trees);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 160),
+      new THREE.MeshStandardMaterial({ color: 0x241703, roughness: 1 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.y = -4.2; orchard.add(ground);
+    // memory frame: pear mountain
+    const ph = loadTex('../assets/photos/pear-mountain.jpg');
+    const frame = new THREE.Group();
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 5.7),
+      new THREE.MeshBasicMaterial({ color: 0xFBF3DE }));
+    const img = new THREE.Mesh(new THREE.PlaneGeometry(7, 5.1),
+      new THREE.MeshBasicMaterial({ map: ph }));
+    img.position.z = .01; frame.add(mat, img);
+    frame.position.set(-5.8, 1.4, -78); frame.rotation.y = .34;
+    orchard.add(frame);
+    const dusk = new THREE.DirectionalLight(0xE0574C, .8); dusk.position.set(-3, 4, -6); orchard.add(dusk);
+    scene.add(orchard);
+  }
+
+  /* ---------- scene 3: hangar ---------- */
+  const hangar = new THREE.Group(); hangar.position.z = -300;
+  {
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1e, roughness: .9 });
+    const room = new THREE.Mesh(new THREE.BoxGeometry(70, 34, 90), wallMat);
+    room.geometry.scale(-1, 1, 1); // inward faces
+    hangar.add(room);
+    const spot = new THREE.SpotLight(0xFFF3D0, 300, 90, .55, .5, 1.4);
+    spot.position.set(0, 15, 0); spot.target.position.set(0, -3, -6);
+    hangar.add(spot, spot.target);
+    // rotor disc — wireframe ring like the hangar-floor photos
+    const rotor = new THREE.Mesh(new THREE.TorusGeometry(7.5, .08, 8, 80),
+      new THREE.MeshBasicMaterial({ color: 0xFBE7A1 }));
+    rotor.rotation.x = Math.PI / 2; rotor.position.set(0, -2.5, -6);
+    const spokes = new THREE.Group();
+    for (let i = 0; i < 6; i++) {
+      const sp = new THREE.Mesh(new THREE.BoxGeometry(15, .04, .04),
+        new THREE.MeshBasicMaterial({ color: 0xFBE7A1 }));
+      sp.rotation.y = i * Math.PI / 6; spokes.add(sp);
+    }
+    spokes.position.copy(rotor.position); hangar.add(rotor, spokes);
+    hangar.userData = { spokes };
+    // memory frame: boeing photo
+    const ph = loadTex('../assets/photos/tipsy-bee-boeing.jpg');
+    const frame = new THREE.Group();
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(9.2, 7.6),
+      new THREE.MeshBasicMaterial({ color: 0xFBF3DE }));
+    const img = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 7),
+      new THREE.MeshBasicMaterial({ map: ph }));
+    img.position.z = .01; frame.add(mat, img);
+    if (mobile) { frame.position.set(4.6, 2.0, -2); frame.rotation.y = -.52; }
+    else { frame.position.set(8.8, 2.2, -4); frame.rotation.y = -.38; }
+    hangar.add(frame);
+    scene.add(hangar);
+  }
+
+  /* ---------- scene 4: the jar ---------- */
+  const jar = new THREE.Group(); jar.position.z = -360;
+  {
+    const brine = new THREE.Mesh(new THREE.SphereGeometry(60, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0x2e4413, side: THREE.BackSide }));
+    jar.add(brine);
+    const bubGeo = new THREE.BufferGeometry();
+    const NB = mobile ? 160 : 340;
+    const bp = new Float32Array(NB * 3);
+    for (let i = 0; i < NB; i++) {
+      bp[i*3] = (Math.random() - .5) * 40; bp[i*3+1] = (Math.random() - .5) * 40;
+      bp[i*3+2] = -20 - Math.random() * 40;
+    }
+    bubGeo.setAttribute('position', new THREE.BufferAttribute(bp, 3));
+    const bubbles = new THREE.Points(bubGeo, new THREE.PointsMaterial({
+      color: 0xd8f0a0, size: .5, map: dotTex, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending }));
+    jar.add(bubbles); jar.userData = { bubbles };
+    // dill fronds: thin green cones
+    const dGeo = new THREE.ConeGeometry(.25, 7, 5);
+    const dMat = new THREE.MeshBasicMaterial({ color: 0x7fa437, transparent: true, opacity: .85 });
+    for (let i = 0; i < (mobile ? 8 : 16); i++) {
+      const d = new THREE.Mesh(dGeo, dMat);
+      d.position.set((Math.random() - .5) * 34, (Math.random() - .5) * 26, -18 - Math.random() * 34);
+      d.rotation.set(Math.random(), Math.random(), Math.random());
+      jar.add(d);
+    }
+    const glow = new THREE.PointLight(0xd8f0a0, 34, 110, 1.5); glow.position.set(0, 6, -30); jar.add(glow);
+    scene.add(jar);
+  }
+
+  /* ---------- scene 5: shelf ---------- */
+  const shelf = new THREE.Group(); shelf.position.z = -480;
+  {
+    const plank = new THREE.Mesh(new THREE.BoxGeometry(34, .7, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a2f12, roughness: .8 }));
+    plank.position.set(0, -2.4, -48); shelf.add(plank);
+    const labels = ['ORIGINAL', 'KRAKEN', 'RELISH', 'HONEY', 'EGGS'];
+    const bodies = [0x31431f, 0x3d1e14, 0x6b6b1e, 0xe9a821, 0xc9c9b4];
+    const prices = ['$18', '$20', '$11', '$12', '$7'];
+    labels.forEach((txt, i) => {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 3, 18),
+        new THREE.MeshStandardMaterial({ color: bodies[i], roughness: .35 }));
+      const lid = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, .3, 18),
+        new THREE.MeshStandardMaterial({ color: 0xB8730E, roughness: .5, metalness: .3 }));
+      lid.position.y = 1.65;
+      // painted label via canvas texture (sRGB!)
+      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128;
+      const cx = cv.getContext('2d');
+      cx.fillStyle = '#FBF3DE'; cx.fillRect(0, 0, 256, 128);
+      cx.fillStyle = '#171006'; cx.font = '700 34px Georgia'; cx.textAlign = 'center';
+      cx.fillText(txt, 128, 58);
+      cx.fillStyle = '#B8730E'; cx.font = 'italic 28px Georgia'; cx.fillText(prices[i], 128, 98);
+      const lt = new THREE.CanvasTexture(cv); lt.colorSpace = THREE.SRGBColorSpace;
+      const label = new THREE.Mesh(new THREE.PlaneGeometry(1.9, .95),
+        new THREE.MeshBasicMaterial({ map: lt }));
+      label.position.set(0, .1, 1.16);
+      g.add(body, lid, label);
+      g.position.set((i - 2) * (mobile ? 3.6 : 5.4), .3, -48);
+      shelf.add(g);
+    });
+    const warm = new THREE.PointLight(0xFFD98A, 150, 80, 1.6); warm.position.set(0, 8, -38); shelf.add(warm);
+    const fill = new THREE.PointLight(0xFFE8B0, 50, 60, 1.8); fill.position.set(0, 1, -30); shelf.add(fill);
+    scene.add(shelf);
+  }
+
+  /* ---------- scene 6: landing fireflies ---------- */
+  const landing = new THREE.Group(); landing.position.z = -560;
+  {
+    const NG = mobile ? 40 : 90;
+    const gGeo = new THREE.BufferGeometry();
+    const gp = new Float32Array(NG * 3);
+    for (let i = 0; i < NG; i++) {
+      gp[i*3] = (Math.random() - .5) * 60; gp[i*3+1] = (Math.random() - .5) * 30;
+      gp[i*3+2] = -10 - Math.random() * 50;
+    }
+    gGeo.setAttribute('position', new THREE.BufferAttribute(gp, 3));
+    landing.add(new THREE.Points(gGeo, new THREE.PointsMaterial({
+      color: 0xF5B426, size: .5, map: dotTex, transparent: true, opacity: .9, depthWrite: false, blending: THREE.AdditiveBlending })));
+    scene.add(landing);
+  }
+
+  /* scenes start hidden; the frame loop's visibility pass owns them */
+  for (const g of [hive, orchard, hangar, jar, shelf, landing]) g.visible = false;
+
+  /* ---------- camera path ---------- */
+  // one straight corridor: z from 6 → -590; scenes parked along it
+  const Z0 = 6, Z1 = -590;
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp01 = v => Math.min(1, Math.max(0, v));
+  const smooth = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t * t * (3 - 2 * t); };
+
+  /* scene fog/bg keyed by p */
+  const bgs = [
+    [0.00, 0x0f0a04, .050], [0.08, 0x2a1a05, .060], [0.27, 0x3a2140, .016],
+    [0.44, 0x0c0c10, .050], [0.56, 0x0d0d12, .050], [0.62, 0x1c2a0c, .045], [0.80, 0x1b1206, .040], [0.94, 0x080503, .050]];
+  const colA = new THREE.Color(), colB = new THREE.Color();
+
+  /* overlays: [el, in, full, out, gone] */
+  const ovs = [
+    [document.getElementById('ov-wake'),   -0.010, 0.000, 0.05, 0.085],
+    [document.getElementById('ov-hive'),    0.095, 0.125, 0.20, 0.235],
+    [document.getElementById('ov-orchard'), 0.235, 0.275, 0.395, 0.43],
+    [document.getElementById('ov-hangar'),  0.455, 0.49,  0.565, 0.60],
+    [document.getElementById('ov-jar'),     0.615, 0.645, 0.775, 0.80],
+    [document.getElementById('ov-shelf'),   0.815, 0.85,  0.925, 0.945],
+    [document.getElementById('ov-landing'), 0.955, 0.975, 1.0,  1.01],
+  ];
+  const chips = [...document.querySelectorAll('.chip')];
+  const hudFill = document.getElementById('hudFill');
+  const hudStops = [...document.querySelectorAll('#hudStops span')];
+
+  /* ---------- hum ---------- */
+  let audio = null, humOn = false;
+  const humBtn = document.getElementById('humBtn');
+  humBtn.addEventListener('click', () => {
+    if (!audio) {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
+      o1.type = 'sawtooth'; o2.type = 'sine';
+      o1.frequency.value = 170; o2.frequency.value = 85;
+      g.gain.value = 0;
+      const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
+      o1.connect(f); o2.connect(f); f.connect(g); g.connect(ctx.destination);
+      o1.start(); o2.start();
+      audio = { ctx, o1, o2, g };
+    }
+    humOn = !humOn;
+    audio.g.gain.linearRampToValueAtTime(humOn ? .05 : 0, audio.ctx.currentTime + .4);
+    humBtn.textContent = humOn ? 'hum · on' : 'hum · off';
+    humBtn.setAttribute('aria-pressed', String(humOn));
+  });
+
+  /* ---------- resize ---------- */
+  function size() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    cam.aspect = w / h; cam.updateProjectionMatrix();
+  }
+  size(); addEventListener('resize', size);
+
+  /* ---------- main loop ---------- */
+  let t = 0, lastY = scrollY, vel = 0;
+  function frame() {
+    t += .016;
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - innerHeight;
+    const p = max > 0 ? clamp01(scrollY / max) : 0;
+    vel = vel * .9 + (scrollY - lastY) * .1; lastY = scrollY;
+
+    /* camera along the corridor with gentle sway */
+    const z = lerp(Z0, Z1, p);
+    cam.position.set(Math.sin(p * 21) * .9, Math.sin(p * 13.7) * .55, z);
+    cam.lookAt(Math.sin(p * 21) * .6, Math.sin(p * 13.7) * .35, z - 8);
+
+    /* bee leads the camera */
+    const wob = Math.sin(t * 2.1) * .14;
+    const aside = (1 - smooth(0, .05, p)) * 2.3 + smooth(.955, .985, p) * 2.6;
+    bee.position.set(
+      Math.sin(t * .9) * .55 + Math.sin(p * 21) * .5 + aside + smooth(.80, .85, p) * (1 - smooth(.94, .96, p)) * 3,
+      wob + Math.sin(p * 13.7) * .3 - .1,
+      z - 6.2);
+    bee.rotation.z = clamp01(vel * .002) * -.4 + Math.sin(t * 1.3) * .05;
+    bee.rotation.y = Math.PI + Math.sin(t * .7) * .2;
+    const flap = Math.sin(t * 46) * 1.15;
+    bee.userData.wL.rotation.x = flap; bee.userData.wR.rotation.x = -flap;
+
+    /* pollen wake — only while actually flying */
+    if (Math.abs(vel) > 1.5) {
+      wakeAge[wakeI] = 0;
+      wakePos[wakeI*3] = bee.position.x; wakePos[wakeI*3+1] = bee.position.y; wakePos[wakeI*3+2] = bee.position.z;
+      wakeI = (wakeI + 1) % WAKE_N;
+    }
+    for (let i = 0; i < WAKE_N; i++) {
+      wakeAge[i] += .016;
+      wakePos[i*3+1] -= .004; /* drift down */
+    }
+    wakeGeo.attributes.position.needsUpdate = true;
+
+
+    /* scene isolation: only the neighborhood of p is rendered */
+    hive.visible    = p < .27;
+    orchard.visible = p > .215 && p < .47;
+    if (orchard.visible) {
+      const skyFade = 1 - smooth(.35, .385, p);
+      orchard.userData.sky.material.opacity = skyFade;
+      orchard.userData.sun.material.opacity = .95 * skyFade;
+      orchard.userData.sunGlow.material.opacity = .22 * skyFade;
+    }
+    hangar.visible  = p > .40 && p < .625;
+    jar.visible     = p > .575 && p < .825;
+    if (jar.visible) jar.position.z = z - 30;
+    shelf.visible   = p > .775 && p < .955;
+    if (shelf.visible) {
+      /* keep the plank 20-30 units ahead of the camera through the scene */
+      const approach = smooth(.80, .94, p);
+      shelf.position.z = z + 48 - (mobile ? (44 - approach * 8) : (30 - approach * 10));
+    }
+    landing.visible = p > .92;
+
+    /* scene-specific motion */
+    if (hangar.visible) hangar.userData.spokes.rotation.y = t * .8;
+    if (jar.visible) jar.userData.bubbles.position.y = (t * .6) % 12;
+
+    /* fog/bg blend */
+    let bi = 0;
+    for (let i = 0; i < bgs.length - 1; i++) if (p >= bgs[i][0]) bi = i;
+    const [pa, ca, fa] = bgs[bi], [pb, cb, fb] = bgs[Math.min(bi + 1, bgs.length - 1)];
+    const bt = pb > pa ? smooth(pa, pb, p) : 0;
+    colA.setHex(ca); colB.setHex(cb); colA.lerp(colB, bt);
+    scene.background = colA.clone(); fog.color.copy(colA);
+    fog.density = lerp(fa, fb, bt);
+
+    /* overlays */
+    for (const [el, i0, i1, o0, o1] of ovs) {
+      const a = smooth(i0, i1, p) * (1 - smooth(o0, o1, p));
+      el.style.opacity = a;
+      el.style.transform = el.id === 'ov-wake' || el.id === 'ov-jar' || el.id === 'ov-shelf' || el.id === 'ov-landing'
+        ? `translate(-50%, ${el.id === 'ov-wake' || el.id === 'ov-landing' ? '-50%' : '0'}) translateY(${(1 - a) * 22}px)`
+        : `translateY(${(1 - a) * 22}px)`;
+      el.style.pointerEvents = a > .5 ? 'auto' : 'none';
+      el.style.visibility = a > .05 ? 'visible' : 'hidden';
+    }
+    /* chips stagger inside jar scene */
+    chips.forEach((c, i) => {
+      const start = .635 + i * .011;
+      const a = smooth(start, start + .02, p) * (1 - smooth(.775, .80, p));
+      c.style.opacity = a;
+      c.style.transform = `translateY(${(1 - a) * 16}px) scale(${.92 + a * .08})`;
+    });
+
+    /* HUD */
+    hudFill.style.width = (p * 100).toFixed(2) + '%';
+    let curI = 0;
+    hudStops.forEach((sp, i) => { const passed = p >= parseFloat(sp.dataset.p) - .01;
+      sp.classList.toggle('on', passed); if (passed) curI = i; });
+    hudStops.forEach((sp, i) => sp.classList.toggle('cur', i === curI));
+
+    /* hum follows */
+    if (audio && humOn) {
+      audio.o1.frequency.value = 160 + Math.abs(vel) * .4 + Math.sin(t * 3) * 6;
+      audio.o2.frequency.value = 80 + Math.abs(vel) * .2;
+    }
+
+    renderer.render(scene, cam);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+</script>
+</html>
