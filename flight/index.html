@@ -73,6 +73,16 @@
   #ov-hive{left:clamp(16px,6vw,90px);bottom:16vh;max-width:520px}
   #ov-orchard{right:clamp(16px,6vw,90px);bottom:14vh;max-width:520px;text-align:right}
   #ov-orchard p{margin-left:auto}
+  .photo-link.left{margin-left:0}
+  .photo-link{display:block;margin:8px 0 0 auto;background:none;border:0;padding:0;font:inherit;color:#F5B426;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  #lightbox{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;background:#0F0A04eb;cursor:zoom-out}
+  #lightbox[hidden]{display:none}
+  #lightbox figure{margin:0;max-width:min(1100px,94vw);text-align:center}
+  #lightbox img{width:100%;height:auto;max-height:80vh;object-fit:contain;border:6px solid #FBF3DE;border-radius:4px;box-shadow:0 30px 80px #000c}
+  #lightbox figcaption{margin-top:14px;font-family:"Fraunces",serif;font-style:italic;color:#FBF3DE;font-size:17px}
+  .lb-close{position:absolute;top:18px;right:18px;background:#FBF3DE;color:#171006;border:0;border-radius:999px;padding:8px 16px;
+    font:600 14px/1 "Inter",system-ui,sans-serif;cursor:pointer}
   #ov-hangar{left:clamp(16px,6vw,90px);top:16vh;max-width:560px}
   #ov-jar{left:50%;top:12vh;transform:translateX(-50%);text-align:center;max-width:640px}
   #ov-shelf{left:50%;bottom:13vh;transform:translateX(-50%);text-align:center;max-width:720px}
@@ -129,6 +139,7 @@
     #ov-hive,#ov-hangar{left:16px;right:16px;max-width:none}
     #ov-orchard{left:16px;right:16px;max-width:none;text-align:left}
     #ov-orchard p{margin-left:0}
+    .photo-link{margin-left:0}
     .chips{left:16px;right:16px;transform:none}
     .hud .stops span{display:none}
     .hud .stops span.cur{display:inline}
@@ -137,6 +148,14 @@
 </style>
 
 <div id="scrollway" aria-hidden="true"></div>
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Pear harvest photograph, about 1931" hidden>
+  <figure>
+    <img src="../assets/photos/pear-mountain.jpg" width="704" height="513"
+      alt="Sepia photograph, about 1931: the great-grandfather sits half-buried in an enormous mountain of harvested pears." />
+    <figcaption>c. 1931 — he grew every pear in the photograph.</figcaption>
+  </figure>
+  <button type="button" class="lb-close" aria-label="Close photo">Close ✕</button>
+</div>
 <canvas id="stage" aria-hidden="true"></canvas>
 
 <header class="chrome">
@@ -164,17 +183,17 @@
 <div class="ov card" id="ov-hive">
   <p class="k">I · The Hive</p>
   <h2>The honey is not an ingredient. <em>It is the thesis.</em></h2>
-  <p>Our own hives, our own comb — $270 for five gallons, and we brine every jar of
-     pickles with it anyway. Zero refined sugar on this farm. The bees set the standard;
-     we just keep up.</p>
+  <p>Our own hives, our own comb — liquid gold we could sell by the spoonful, and we
+     pour it into every jar of pickles anyway. Zero refined sugar on this farm. The bees
+     set the standard; we just keep up.</p>
 </div>
 
 <div class="ov card" id="ov-orchard">
   <p class="k">II · The Orchard</p>
   <h2>Four generations of <em>Rogue Valley stubbornness.</em></h2>
-  <p>Twenty-six acres, farmed to the NRCS soil survey instead of against it.
-     The pears came first — by the mountain-load.</p>
-  <p class="cap">c. 1931 — he grew every pear in the photograph.</p>
+  <p>Twenty-six acres of sun-soaked, stubborn, forgiving ground, the kind that remembers
+     every hand that ever worked it. The pears came first — by the mountain-load.</p>
+  <p class="cap">c. 1931 — he grew every pear in the photograph. <button class="photo-link" type="button" data-lightbox="pear-mountain.jpg">Tap the photo to see it up close</button></p>
 </div>
 
 <div class="ov card" id="ov-hangar">
@@ -183,6 +202,7 @@
   <p>Built by hand, named the <em>Tipsy Bee</em>, flown by leg. The rival's mark stood at
      19.46 seconds; the skids left the concrete and the family never quite landed.
      You can pedal it yourself in the <a href="../arcade/" style="color:var(--honey)">Arcade</a>.</p>
+  <p class="cap"><button class="photo-link left" type="button" data-lightbox="tipsy-bee-boeing.jpg">Tap the photo to see it up close</button></p>
 </div>
 
 <div class="ov" id="ov-jar">
@@ -235,13 +255,13 @@
   <section>
     <h2>I · The Hive</h2>
     <p>The honey is not an ingredient; it is the thesis. Our own hives, our own comb —
-       $270 for five gallons, and we brine every jar of pickles with it anyway.
-       Zero refined sugar on this farm.</p>
+       liquid gold we could sell by the spoonful, and we pour it into every jar of pickles
+       anyway. Zero refined sugar on this farm.</p>
   </section>
   <section>
     <h2>II · The Orchard</h2>
-    <p>Twenty-six acres of the Rogue Valley, farmed to the NRCS soil survey instead of
-       against it. The pears came first — by the mountain-load.</p>
+    <p>Twenty-six acres of sun-soaked, stubborn, forgiving Rogue Valley ground, the kind
+       that remembers every hand that ever worked it. The pears came first — by the mountain-load.</p>
     <figure><img src="../assets/photos/pear-mountain.jpg" width="704" height="513" loading="lazy"
       alt="Sepia photograph, about 1931: the great-grandfather sits half-buried in an enormous mountain of harvested pears." />
       <figcaption>c. 1931 — he grew every pear in the photograph.</figcaption></figure>
@@ -324,6 +344,7 @@ if (reduce || !canWebGL) {
 
   const texLoader = new THREE.TextureLoader();
   const loadTex = url => { const t = texLoader.load(url); t.colorSpace = THREE.SRGBColorSpace; return t; };
+  const photoFrames = []; // { mesh, group, src, alt, caption } — clickable to full screen
 
   /* ---------- the bee ---------- */
   const bee = new THREE.Group();
@@ -349,9 +370,14 @@ if (reduce || !canWebGL) {
     const glow = new THREE.PointLight(0xF5B426, 14, 9, 1.8); glow.position.set(0, .1, 0);
     bee.add(body, head, ...stripes, wL, wR, glow);
     bee.scale.setScalar(.72);
-    bee.userData = { wL, wR };
+    // generous invisible hit target so she's easy to tap
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(.95, 10, 10),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    bee.add(hit);
+    bee.userData = { wL, wR, hit };
     scene.add(bee);
   }
+  let buzzAt = -10; // set on click; the frame loop does a quick loop-de-loop
 
   /* pollen wake (upgrade pass 3 candidate baked in cheap) */
   const WAKE_N = mobile ? 60 : 140;
@@ -430,12 +456,15 @@ if (reduce || !canWebGL) {
     const ph = loadTex('../assets/photos/pear-mountain.jpg');
     const frame = new THREE.Group();
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 5.7),
-      new THREE.MeshBasicMaterial({ color: 0xFBF3DE }));
+      new THREE.MeshBasicMaterial({ color: 0xFBF3DE, fog: false }));
     const img = new THREE.Mesh(new THREE.PlaneGeometry(7, 5.1),
-      new THREE.MeshBasicMaterial({ map: ph }));
+      new THREE.MeshBasicMaterial({ map: ph, fog: false }));
     img.position.z = .01; frame.add(mat, img);
-    frame.position.set(-5.8, 1.4, -78); frame.rotation.y = .34;
+    frame.position.set(-2.6, 1.2, -78); frame.rotation.y = .16; frame.scale.setScalar(1.45);
     orchard.add(frame);
+    photoFrames.push({ mesh: img, group: orchard, src: '../assets/photos/pear-mountain.jpg',
+      alt: 'Sepia photograph, about 1931: the great-grandfather sits half-buried in an enormous mountain of harvested pears.',
+      caption: 'c. 1931 — he grew every pear in the photograph.' });
     const dusk = new THREE.DirectionalLight(0xE0574C, .8); dusk.position.set(-3, 4, -6); orchard.add(dusk);
     scene.add(orchard);
   }
@@ -466,13 +495,16 @@ if (reduce || !canWebGL) {
     const ph = loadTex('../assets/photos/tipsy-bee-boeing.jpg');
     const frame = new THREE.Group();
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(9.2, 7.6),
-      new THREE.MeshBasicMaterial({ color: 0xFBF3DE }));
+      new THREE.MeshBasicMaterial({ color: 0xFBF3DE, fog: false }));
     const img = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 7),
-      new THREE.MeshBasicMaterial({ map: ph }));
+      new THREE.MeshBasicMaterial({ map: ph, fog: false }));
     img.position.z = .01; frame.add(mat, img);
-    if (mobile) { frame.position.set(4.6, 2.0, -2); frame.rotation.y = -.52; }
-    else { frame.position.set(8.8, 2.2, -4); frame.rotation.y = -.38; }
+    if (mobile) { frame.position.set(.6, -.9, -18); frame.rotation.y = -.1; frame.scale.setScalar(1.05); }
+    else { frame.position.set(4.4, 2.4, -18); frame.rotation.y = -.15; frame.scale.setScalar(1.4); }
     hangar.add(frame);
+    photoFrames.push({ mesh: img, group: hangar, src: '../assets/photos/tipsy-bee-boeing.jpg',
+      alt: 'The Tipsy Bee human-powered helicopter being pedaled on the Boeing hangar floor, photo date-stamped 94-8-27.',
+      caption: 'The Tipsy Bee, 27 August 1994.' });
     scene.add(hangar);
   }
 
@@ -558,6 +590,41 @@ if (reduce || !canWebGL) {
     scene.add(landing);
   }
 
+  /* flight photos: click any framed photo in the scene (or a caption link) to see it full screen */
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = lightbox.querySelector('img'), lbCap = lightbox.querySelector('figcaption');
+  const openPhoto = ph => {
+    lbImg.src = ph.src; lbImg.alt = ph.alt; lbCap.textContent = ph.caption;
+    lightbox.setAttribute('aria-label', ph.caption);
+    lightbox.hidden = false; lightbox.querySelector('.lb-close').focus();
+  };
+  const closePhoto = () => { lightbox.hidden = true; };
+  lightbox.addEventListener('click', closePhoto);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !lightbox.hidden) closePhoto(); });
+  document.querySelectorAll('[data-lightbox]').forEach(btn => btn.addEventListener('click', e => {
+    e.stopPropagation(); openPhoto(photoFrames.find(ph => ph.src.endsWith(btn.dataset.lightbox)));
+  }));
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const photoAt = e => {
+    if (!lightbox.hidden) return null;
+    ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, cam);
+    return photoFrames.find(ph => ph.group.visible && ray.intersectObject(ph.mesh).length) || null;
+  };
+  const beeAt = e => {
+    if (!lightbox.hidden) return false;
+    ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, cam);
+    return ray.intersectObject(bee.userData.hit).length > 0;
+  };
+  canvas.addEventListener('click', e => {
+    if (beeAt(e)) { buzzAt = t; return; }
+    const ph = photoAt(e); if (ph) openPhoto(ph);
+  });
+  canvas.addEventListener('pointermove', e => {
+    canvas.style.cursor = beeAt(e) ? 'pointer' : photoAt(e) ? 'zoom-in' : '';
+  });
+
   /* scenes start hidden; the frame loop's visibility pass owns them */
   for (const g of [hive, orchard, hangar, jar, shelf, landing]) g.visible = false;
 
@@ -640,7 +707,16 @@ if (reduce || !canWebGL) {
       z - 6.2);
     bee.rotation.z = clamp01(vel * .002) * -.4 + Math.sin(t * 1.3) * .05;
     bee.rotation.y = Math.PI + Math.sin(t * .7) * .2;
-    const flap = Math.sin(t * 46) * 1.15;
+    const buzzAge = t - buzzAt, buzzing = buzzAge < 1.8;
+    if (buzzing) { // tapped: a fast, shrinking loop-de-loop around her spot
+      const k = 1 - buzzAge / 1.8, a = buzzAge * 9;
+      bee.position.x += Math.sin(a) * 1.4 * k;
+      bee.position.y += Math.sin(a * 2) * .7 * k + .3 * k;
+      bee.position.z += Math.cos(a) * .9 * k;
+      bee.rotation.y += a * k;
+      bee.rotation.z += Math.sin(a * 3) * .5 * k;
+    }
+    const flap = Math.sin(t * (buzzing ? 90 : 46)) * 1.15;
     bee.userData.wL.rotation.x = flap; bee.userData.wR.rotation.x = -flap;
 
     /* pollen wake — only while actually flying */
